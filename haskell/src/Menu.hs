@@ -2,8 +2,8 @@ module Menu (printMenu, chooseOption, backToMenu, startGame) where
 
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
-import Game (displayWindow, initialize, render, handleKeys, beginTimer, sMove, pacScore, pacEat, pacEatP, wallCollision, checkTeleport, execM)
-import BossAI (releasePinky, bossModeSwitch, bossCollisionSwitch, moveToTargetB, moveToTargetP)
+import Game (displayWindow, initialize, render, handleKeys, beginTimer, sMove, mazeScore, mazeEat, mazeEatP, wallCollision, checkTeleport, execM)
+import BossIA (releasePinky, bossModeSwitch, bossCollisionSwitch, moveToTargetB, moveToTargetP)
 import Utils (toContinue, printTextScreen, fps, MazeGame(..))
 import Enigmas (printEnigma)
 import System.Exit (exitSuccess)
@@ -44,7 +44,7 @@ startGame = do
     play displayWindow black fps initialize render handleKeys step
         where
             step :: Float -> MazeGame -> MazeGame
-            step sec game = sMove sec $ releasePinky $ moveToTargetP $ moveToTargetB $ bossModeSwitch $ beginTimer $ bossCollisionSwitch $ pacScore $ pacEat $ pacEatP $ wallCollision $ execM $ checkTeleport game
+            step sec game = sMove sec $ releasePinky $ moveToTargetP $ moveToTargetB $ bossModeSwitch $ beginTimer $ bossCollisionSwitch $ mazeScore $ mazeEat $ mazeEatP $ wallCollision $ execM $ checkTeleport game
 
 -- Abre o Tutorial
 openTutorial :: IO ()

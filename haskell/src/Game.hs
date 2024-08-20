@@ -1,4 +1,4 @@
-module Game (displayWindow, initialize, render, handleKeys, beginTimer, sMove, pacScore, pacEat, pacEatP, wallCollision, checkTeleport, execM) where
+module Game (displayWindow, initialize, render, handleKeys, beginTimer, sMove, mazeScore, mazeEat, mazeEatP, wallCollision, checkTeleport, execM) where
 
     import Graphics.Gloss
     import Graphics.Gloss.Interface.Pure.Game
@@ -7,7 +7,7 @@ module Game (displayWindow, initialize, render, handleKeys, beginTimer, sMove, p
 
     import Maze
     import Utils
-    import BossAI (listLength)
+    import BossIA (listLength)
 
 
     -- | Lidar com entradas do usuário. Necessário para a função de reprodução do gloss
@@ -128,7 +128,7 @@ module Game (displayWindow, initialize, render, handleKeys, beginTimer, sMove, p
 
     -- | Main display window.
     displayWindow :: Display
-    displayWindow = InWindow "computing-maze" (800,800) (350, 350)
+    displayWindow = InWindow "Computing-Maze" (800,800) (350, 350)
 
     -- | Renders the victory screen
     renderVictory :: Picture
@@ -138,14 +138,14 @@ module Game (displayWindow, initialize, render, handleKeys, beginTimer, sMove, p
     renderDefeat :: Picture
     renderDefeat = translate (-170) (0) $ scale 0.4 0.4 $ color white $ Text "Game Over"
 
-    -- | Main render function used in play. List of multiple other render functions that layer on one another.
+    -- | Função de renderização principal usada no jogo. Lista de várias outras funções de renderização que se sobrepõem.
     render :: MazeGame -> Picture
     render game = case gameStatus game of
         WON -> renderVictory
         LOST -> renderDefeat
         PLAYING -> pictures $ [(renderLives game),(renderPowerPellets game),(renderW coords),(renderMazeGame game),(renderStuff game),(renderPellets game),(renderPinky game),(renderBlinky game)]
 
--- | This is the standard movement function. Take the velocity and position, then update it with (position + velocity * time)
+    -- | Esta é a função de movimento padrão. Pegue a velocidade e a posição, e atualize-as com (posição + velocidade * tempo)
     sMove :: Float -> MazeGame -> MazeGame
     sMove sec game = game {mazeGame = Characters {cName = MazeGame, location = (x', y'), speed = (vx,vy)}, 
                             blinky = Boss {gName = Blinky, gLocation = (bx',by'), gSpeed = (bvx,bvy), gTarget = curTargetB, gLastMove = curLMB, gDirection = curDirectionB},
@@ -175,33 +175,32 @@ module Game (displayWindow, initialize, render, handleKeys, beginTimer, sMove, p
             curLMP = (gLastMove (pinky game))
             curDirectionP = (gDirection (pinky game))
         
-    -- | Returns true if mazeGame is stopped.
+    -- | Retorna verdadeiro se mazeGame for interrompido.
     notMoving :: MazeGame -> Bool
     notMoving game = if direction game == STOP then True else False
 
-
-    -- | Function that handles mazeGames movements
+    -- | Função que lida com os movimentos do mazeGames
     execM :: MazeGame -> MazeGame
     execM game
         | curTime <= 2.5 = game
-        | direction game == bufDirection game = game                -- If the buffer direction and the game direction are equal, keep going
-        | direction game /= bufDirection game = newgame             -- If the buffer direction and the game direction are not euqal, use newgame
-        | otherwise = game                                          -- This shouldn't trigger, but there for compiling sake
+        | direction game == bufDirection game = game                -- Se a direção do buffer e a direção do jogo forem iguais, continue
+        | direction game /= bufDirection game = newgame             -- Se a direção do buffer e a direção do jogo não forem iguais, use um novo jogo
+        | otherwise = game                                          -- Isso não deveria ser acionado, mas está aí para fins de compilação
         where
             curTime = time game
             newgame 
-                | (vx, vy) == (0,0) = case bufDirection game of     -- Check the cases of the buffer if the mazeGame is stopped.
-                    UP -> up                                        -- Will move the mazeGame UP
-                    DOWN -> down                                    -- Will move the mazeGame DOWN
-                    LEFT -> left                                    -- Will move the mazeGame LEFT
-                    RIGHT -> right                                  -- Will move the mazeGame RIGHT
-                    STOP -> stop                                    -- Will stop the mazeGame
-                | (vx, vy) /= (0, 0) = case bufDirection game of    -- Case where the mazeGame is moving but the buffer is different. Makes sure the mazeGame can change directions when moving into other paths
-                    UP -> tUP                                       -- Will change direction to UP
-                    DOWN -> tDOWN                                   -- Will change direction to DOWN
-                    LEFT -> tLEFT                                   -- Will change direction to LEFT
-                    RIGHT -> tRIGHT                                 -- Will change direction to RIGHT
-                    STOP -> tSTOP                                   -- Will stop the mazeGame
+                | (vx, vy) == (0,0) = case bufDirection game of     -- Verifique os casos do buffer se o mazeGame estiver parado.
+                    UP -> up                                        -- Moverá o labirinto para CIMA
+                    DOWN -> down                                    -- Moverá o labirinto para BAIXO
+                    LEFT -> left                                    -- Moverá o labirinto para ESQUERDA
+                    RIGHT -> right                                  -- Moverá o labirinto para DIREITA
+                    STOP -> stop                                    -- Vai parar o JOGO 
+                | (vx, vy) /= (0, 0) = case bufDirection game of    -- Caso em que o player está se movendo, mas o buffer é diferente. Garante que o player possa mudar de direção ao se mover para outros caminhos
+                    UP -> tUP                                       -- Mudará de direção para CIMA
+                    DOWN -> tDOWN                                   -- Mudará de direção para BAIXO
+                    LEFT -> tLEFT                                   -- Mudará de direção para ESQUERDA
+                    RIGHT -> tRIGHT                                 -- Mudará de direção para DIREITA
+                    STOP -> tSTOP                                   -- Vai parar o JOGO
                 | otherwise = game
                 where
                     (x,y) = (location (mazeGame game))
@@ -219,15 +218,14 @@ module Game (displayWindow, initialize, render, handleKeys, beginTimer, sMove, p
                     tRIGHT = if (elem ((x'+1), y') coords) then game else game {direction = RIGHT, mazeGame = Characters {cName = MazeGame, speed = (4,0), location = (x',y')}}
                     tSTOP = game
 
-
     -- | Verificações de colisão em paredes
     wallCollision :: MazeGame -> MazeGame
-    wallCollision game = case direction game of         -- Checks cases for the current moving direction
-        UP -> up                                        -- Checks if position above is a wall. If not then move UP
-        DOWN -> down                                    -- Checks if position below is a wall. If not then move DOWN
-        LEFT -> left                                    -- Checks if position left is a wall. If not then move LEFT
-        RIGHT -> right                                  -- Checks if position right is a wall. If not then move RIGHTs
-        STOP -> stop                                    -- stops the mazeGame
+    wallCollision game = case direction game of         -- Verifica casos para a direção atual do movimento
+        UP -> up                                        -- Verifica se a posição acima é uma parede. Se não, então mova PARA CIMA
+        DOWN -> down                                    -- Verifica se a posição abaixo é uma parede. Se não, então mova PARA BAIXO
+        LEFT -> left                                    -- Verifica se a posição esquerda é uma parede. Se não, mova para a ESQUERDA
+        RIGHT -> right                                  -- Verifica se a posição direita é uma parede. Se não, mova para a DIREITA
+        STOP -> stop                                    -- Para o jogo
         where
             (x,y) = (location (mazeGame game))
             (vx, vy) = (speed (mazeGame game))
@@ -243,10 +241,9 @@ module Game (displayWindow, initialize, render, handleKeys, beginTimer, sMove, p
             right = if (elem (xR,y') coords) then game {direction = STOP, mazeGame = Characters {cName = MazeGame, speed = (0,0), location = (x',y')}} else game
             stop = game {direction = STOP, mazeGame = Characters {cName = MazeGame, speed = (0,0), location = (x',y')}}
 
-
-    -- | Função que verifica se o jogador está acima de uma bolinha. Se sim, remova-o da lista mantida no gamestate
-    pacEat :: MazeGame -> MazeGame
-    pacEat game
+    -- | Função que verifica se o jogador está acima de uma bolinha. Se sim, remova-o da lista mantida no estado do jogo
+    mazeEat :: MazeGame -> MazeGame
+    mazeEat game
             | (x',y') `elem` pelletsL = game {pellets = [x | x <- curPellets, x /= (x',y')]}
             | otherwise = game
             where
@@ -257,8 +254,8 @@ module Game (displayWindow, initialize, render, handleKeys, beginTimer, sMove, p
                 curScore = (score game)
 
     -- | Função que verifica se o player está sobre um power pellet. Se sim, remova-o da lista mantida no estado do jogo e mude o modo para assustado
-    pacEatP :: MazeGame -> MazeGame
-    pacEatP game
+    mazeEatP :: MazeGame -> MazeGame
+    mazeEatP game
             | (x',y') `elem` pPelletsL = game {fTime = 0, gMode = FRIGHTENED, pPellets = [x | x <- curPellets, x /= (x',y')]}
             | otherwise = game
             where
@@ -268,13 +265,10 @@ module Game (displayWindow, initialize, render, handleKeys, beginTimer, sMove, p
                 curPellets = pPellets game
                 curScore = (score game)
                 pPelletsL = pPellets game
-
-
-
     
     -- | Determina a pontuação atual do seu jogo. Pelotas normais valem 10 pontos. Pelotas Grandes valem 50
-    pacScore :: MazeGame -> MazeGame
-    pacScore game 
+    mazeScore :: MazeGame -> MazeGame
+    mazeScore game 
                 | curScore >= 1700 = game {gameStatus = WON}
                 | otherwise = game {score = newscore}
                 where
@@ -282,7 +276,6 @@ module Game (displayWindow, initialize, render, handleKeys, beginTimer, sMove, p
                     curPellets = pellets game
                     curScore = score game
                     curPowerPellets = pPellets game
-
 
     -- | Verifique se o jogador está no local de teletransporte. Se sim, teletransporte-o para o outro lado
     checkTeleport :: MazeGame -> MazeGame
