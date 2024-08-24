@@ -74,7 +74,8 @@ executable computing-maze
                         gloss,
                         array,
                         containers,
-                        random,
+                        random >= 1.2.1.2,
+                        random-shuffle >= 0.0.4,
                         vector >= 0.12
 
     -- Directories containing source files.

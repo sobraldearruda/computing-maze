@@ -60,6 +60,16 @@
   (major1) == 1 && (major2) <  2 || \
   (major1) == 1 && (major2) == 2 && (minor) <= 1)
 #endif /* MIN_VERSION_random */
+/* package random-shuffle-0.0.4 */
+#ifndef VERSION_random_shuffle
+#define VERSION_random_shuffle "0.0.4"
+#endif /* VERSION_random_shuffle */
+#ifndef MIN_VERSION_random_shuffle
+#define MIN_VERSION_random_shuffle(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  0 || \
+  (major1) == 0 && (major2) == 0 && (minor) <= 4)
+#endif /* MIN_VERSION_random_shuffle */
 /* package vector-0.13.1.0 */
 #ifndef VERSION_vector
 #define VERSION_vector "0.13.1.0"
