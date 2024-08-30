@@ -1,138 +1,71 @@
-module Main where
+-- import System.Random
+-- import Data.Array
+-- import Data.List (delete)
 
-import Control.Monad
-import Control.Monad.State
-import Control.Monad.Reader
-import Data.Map
-import System.Random
+-- type Maze = Array (Int, Int) Int
 
-data ElementType = Space | Wall | Marked | Visited | Door
-    deriving (Eq)
+-- data Direction = North | South | East | West deriving (Enum, Bounded, Show)
 
-data Direction = DLeft | DRight | DUp | DDown
-    deriving (Enum)
+-- move :: (Int, Int) -> Direction -> (Int, Int)
+-- move (x, y) North = (x, y - 2)
+-- move (x, y) South = (x, y + 2)
+-- move (x, y) East  = (x + 2, y)
+-- move (x, y) West  = (x - 2, y)
 
-data MazeData = MazeData {
-    width :: Int,
-    height :: Int,
-    gen :: StdGen,
-    maze :: Map (Int, Int) ElementType
-}
+-- breakWall :: (Int, Int) -> Direction -> (Int, Int)
+-- breakWall (x, y) North = (x, y - 1)
+-- breakWall (x, y) South = (x, y + 1)
+-- breakWall (x, y) East  = (x + 1, y)
+-- breakWall (x, y) West  = (x - 1, y)
 
-instance Show ElementType where
-    show Space = "  "
-    show Wall = "[]"
-    show Marked = "++"
-    show Visited = show Space
-    show Door = show Space
+-- initMaze :: Int -> Int -> Maze
+-- initMaze w h = array ((1, 1), (w, h)) [((x, y), 1) | x <- [1..w], y <- [1..h]]
 
-instance Show MazeData where
-    show = printMazeMatrix
+-- generateMaze :: StdGen -> Maze -> (Int, Int) -> Maze
+-- generateMaze gen maze start = go gen maze [start]
+--   where
+--     go _ maze [] = maze
+--     go g m (current:stack) =
+--         let directions = shuffle g [minBound .. maxBound]
+--             (newGen, _) = split g
+--             tryMove m [] _ = go newGen m stack
+--             tryMove m (d:ds) (x, y) =
+--                 let nextPos = move (x, y) d
+--                 in if inBounds nextPos (bounds m) && m ! nextPos == 1
+--                    then go newGen (carveMaze m (x, y) nextPos d) (nextPos : (x, y) : stack)
+--                    else tryMove m ds (x, y)
+--         in tryMove m directions current
 
--- Função para imprimir o labirinto como uma matriz
-printMazeMatrix :: MazeData -> String
-printMazeMatrix md =
-    unlines [concat [showElement (x, y) | x <- [0 .. width md - 1]] | y <- [0 .. height md - 1]]
-    where
-        showElement pos = findWithDefault Wall pos (maze md) |> show
+-- carveMaze :: Maze -> (Int, Int) -> (Int, Int) -> Direction -> Maze
+-- carveMaze maze pos nextPos dir =
+--     let breakPos = breakWall pos dir
+--     in maze // [(pos, 0), (breakPos, 0), (nextPos, 0)]
 
-type MazeState a = ReaderT (Int, Int) (State MazeData) a
+-- shuffle :: RandomGen g => g -> [a] -> [a]
+-- shuffle _ [] = []
+-- shuffle gen xs =
+--     let (n, newGen) = randomR (0, length xs - 1) gen
+--         (first, x:rest) = splitAt n xs
+--     in x : shuffle newGen (first ++ rest)
 
--- Inicializa um labirinto não esculpido.
-initMaze :: Int -> Int -> Int -> MazeData
-initMaze w h s =
-    let xs = [0 .. w - 1] in
-    let ys = [0 .. h - 1] in
-    let top = [(x, 0) | x <- xs] in
-    let bottom = [(x, h - 1) | x <- xs] in
-    let left = [(0, y) | y <- ys] in
-    let right = [(w - 1, y) | y <- ys] in
-    let start = [(2, 2)] in
-    let spaces = Prelude.foldl (++) [] [top, bottom, left, right, start] in
-    let m1 = fromList [(p, Space) | p <- spaces] in
-    let doors = [(2, 2), (2, 1), (w - 3, h - 2)] in
-    let m2 = fromList [(p, Door) | p <- doors] in
-    MazeData {
-        width = w, height = h, gen = mkStdGen s,
-        maze = union m1 m2
-    }
+-- inBounds :: (Int, Int) -> ((Int, Int), (Int, Int)) -> Bool
+-- inBounds (x, y) ((xmin, ymin), (xmax, ymax)) = x >= xmin && x <= xmax && y >= ymin && y >= xmin && y <= ymax
 
--- Obtém a próxima posição na direção especificada.
-getPosition :: (Int, Int) -> Direction -> (Int, Int)
-getPosition (x, y) DLeft = (x - 1, y)
-getPosition (x, y) DRight = (x + 1, y)
-getPosition (x, y) DUp = (x, y - 1)
-getPosition (x, y) DDown = (x, y + 1)
+-- printMaze :: Maze -> IO ()
+-- printMaze maze = do
+--     let ((xmin, ymin), (xmax, ymax)) = bounds maze
+--     mapM_ (\y -> do
+--               mapM_ (\x -> putStr (if maze ! (x, y) == 1 then "[]" else "  ")) [xmin..xmax]
+--               putStrLn ""
+--           ) [ymin..ymax]
 
--- Move na direção especificada.
-move :: ElementType -> Direction -> MazeState (Int, Int)
-move fill d = do
-    pos <- ask; st <- get
-    let mid = getPosition pos d
-    let m = insert mid fill $ maze st
-    let next = getPosition mid d
-    put $ st { maze = insert next fill m }
-    return next
+-- main :: IO ()
+-- main = do
+--     let width = 40
+--     let height = 50
+--     let maze = initMaze width height
+--     gen <- getStdGen
+--     let generatedMaze = generateMaze gen maze (2, 2)
+--     let mazeWithEntryExit = generatedMaze // [((1, 2), 0), ((width - 2, height - 3), 0)]
+--     printMaze mazeWithEntryExit
 
--- Determina se podemos esculpir na direção especificada.
-canMove :: ElementType -> Direction -> MazeState Bool
-canMove match d = do
-    pos <- ask; st <- get
-    let mid = getPosition pos d
-    let e1 = findWithDefault Wall mid $ maze st
-    let next = getPosition mid d
-    let e2 = findWithDefault Wall next $ maze st
-    return $ e1 == match && e2 == match
-
--- Esculpe o labirinto a partir da posição inicial.
-carve :: MazeState ()
-carve = do
-    st <- get
-    let (start, g') = randomR (0, 3) $ gen st
-    put $ st { gen = g' }
-    mapM_ tryCarve [toEnum ((start + i) `mod` 4) | i <- [0 .. 3]]
-    where
-        tryCarve d = do
-            cm <- canMove Wall d
-            when cm (move Space d >>= (\n -> local (const n) carve))
-
--- Encontra um caminho do ponto inicial até o ponto final.
-solveTo :: (Int, Int) -> MazeState Bool
-solveTo stop = do
-    pos <- ask
-    if pos == stop then
-        return True
-    else do
-        st <- get; pos <- ask
-        put $ st { maze = insert pos Marked (maze st) }
-        foldM trySolve False [toEnum i | i <- [0 .. 3]]
-    where
-        trySolve result d
-            | result = return True
-            | otherwise = do
-                cm <- canMove Space d
-                if cm then do
-                    next <- move Marked d
-                    found <- local (const next) $ solveTo stop
-                    if found then return True
-                    else (move Visited d >> return False)
-                else return False
-
--- Gera um labirinto aleatório.
-generate :: Int -> Int -> Int -> MazeData
-generate w h s = execState (runReaderT carve (2, 2)) (initMaze w h s)
-
--- Resolve um labirinto.
-solve :: MazeData -> MazeData
-solve md =
-    let start = (2, 2) in
-    let stop = ((width md) - 3, (height md - 3)) in
-    execState (runReaderT (solveTo stop) start) md
-
--- Gera e exibe um labirinto resolvido na forma de matriz.
-main :: IO ()
-main = do
-    let maze = generate 39 23 5
-    let solved = solve maze
-    putStrLn $ printMazeMatrix maze
-    putStrLn $ printMazeMatrix solved
