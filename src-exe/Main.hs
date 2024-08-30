@@ -262,7 +262,7 @@ import Rendering (GlossState (..), drawGlossState, glossEventHandler, glossTimeH
 
 main :: IO()
 main = do
-  let exampleMaze = maze21x21  -- Use o labirinto que desejar
+  let exampleMaze = exampleMaze3  -- Use o labirinto que desejar
       mazeWidth = width exampleMaze
       mazeHeight = height exampleMaze
       screenWidth = (mazeWidth + 4) * round cellSize
