@@ -1,7 +1,8 @@
 module Player (Player (..), initialPlayerState, triangulo) where
 
-
 import Graphics.Gloss
+import Maze (cellSize)
+
 data Player = Player
     { playerX     :: Float
     , playerY     :: Float
@@ -12,7 +13,7 @@ initialPlayerState :: Float -> Float-> Float -> Player
 initialPlayerState mazeOffsetX mazeOffsetY cellSize = Player 
     {
         playerX = mazeOffsetX + cellSize
-    ,   playerY = mazeOffsetX - cellSize
+    ,   playerY = mazeOffsetY - cellSize
     ,   playerAngle = 90
     }
 

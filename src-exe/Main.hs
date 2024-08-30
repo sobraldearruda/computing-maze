@@ -252,27 +252,27 @@
 --     glossTimeHandler
 -- =============================================================================================
 
-  module Main where
+module Main where
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 import Minotaur (Minotaur (..), initialMinotaurState)
 import Maze (Maze (..), cellSize, scaleFactor, maze21x21, exampleMaze3)
-import Player (Player (..), initialPlayerState)
+import Player (Player (..), initialPlayerState, triangulo)
+import Rendering (GlossState (..), drawGlossState, glossEventHandler, glossTimeHandler, initialGlossState, fr)
 
 main :: IO()
 main = do
-  let player = scale (cellSize / cellSize) (cellSize / cellSize) $ color red (polygon triangulo)
-      exampleMaze = maze21x21  -- Use o labirinto que desejar
+  let exampleMaze = maze21x21  -- Use o labirinto que desejar
       mazeWidth = width exampleMaze
       mazeHeight = height exampleMaze
       screenWidth = (mazeWidth + 4) * round cellSize
       screenHeight = (mazeHeight + 2) * round cellSize
       dm = InWindow "Computing Maze" (screenWidth, screenHeight) (300, 50)
-      initialState = initialGlossState exampleMaze3
+      initialState = initialGlossState exampleMaze
   play dm
     black -- Fundo da tela preto
     fr
-    initialGlossState
+    initialState
     drawGlossState
     glossEventHandler
     glossTimeHandler

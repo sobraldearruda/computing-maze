@@ -1,4 +1,4 @@
-module Minotaur (Minotaur (..), initialMinotaurState) where
+module Minotaur (Minotaur (..), initialMinotaurState, moveTowards) where
 
 import Player (Player (..))
 import Maze (cellSize)
@@ -14,7 +14,7 @@ initialMinotaurState :: Float -> Float-> Float -> Minotaur
 initialMinotaurState mazeOffsetX mazeOffsetY cellSize = Minotaur 
     {
         minotaurX = mazeOffsetX - cellSize
-    ,   minotaurY = mazeOffsetX - cellSize
+    ,   minotaurY = mazeOffsetY - cellSize
     ,   minotaurAngle = 90
     ,   delayTime = 1.5
     }
