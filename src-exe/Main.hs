@@ -3,13 +3,20 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 import PrefabMazes (maze21x21, exampleMaze3, exampleMaze)
 
+<<<<<<< HEAD
 type State = (Float, Float, Float) -- x, y, angle
 type Maze = [[Int]]
 type GlossState = (State, Picture, Maze, Int, Int) -- Adicione as dimensões do labirinto
+=======
+type State = (Float, Float, Float) -- (x, y) [posições], ângulo de objetos
+type Maze = [[Int]] -- representa um labirinto
+type GlossState = (State, Picture, Maze) -- posição/ângulo, imagen desenhada na tela, labirinto
+>>>>>>> 2c9c7ebc9556245627269272c0d952e2e17ae3d5
 
 scaleFactor :: Float
 scaleFactor = 0.7
 
+<<<<<<< HEAD
 -- Defina o tamanho da célula do labirinto
 cellSize :: Float
 cellSize = 40 * scaleFactor
@@ -27,7 +34,15 @@ initialPlayerY mazeOffsetY = mazeOffsetY - cellSize
 -- Defina a posição inicial do jogador
 initialState :: Float -> Float -> State
 initialState playerX playerY = (playerX, playerY, 90)
+=======
+-- Estado inicial de objetos
+initialState :: State
+initialState = (0, 0, 90)
+>>>>>>> 2c9c7ebc9556245627269272c0d952e2e17ae3d5
 
+-- Inicializa o estado do jogo
+-- Recebe uma imagem do jogador e do labirinto
+-- Retorna uma tupla com o estado inicial, o jogador e o labirinto
 initialGlossState :: Picture -> Maze -> GlossState
 initialGlossState player maze =
   let mazeWidth = length (head maze)
@@ -40,7 +55,10 @@ initialGlossState player maze =
       playerY = initialPlayerY mazeOffsetY
   in (initialState playerX playerY, player, maze, mazeWidth, mazeHeight)
 
+-- Recebe um evento e um estado do jogo
+-- Retorna um novo estado do jogo
 glossEventHandler :: Event -> GlossState -> GlossState
+<<<<<<< HEAD
 glossEventHandler (EventKey (SpecialKey KeyUp) Down _ _)    ((x, y, angle), player, maze, mw, mh) = ((x, y + cellSize, 0), player, maze, mw, mh)
 glossEventHandler (EventKey (SpecialKey KeyDown) Down _ _)  ((x, y, angle), player, maze, mw, mh) = ((x, y - cellSize, -180), player, maze, mw, mh)
 glossEventHandler (EventKey (SpecialKey KeyLeft) Down _ _)  ((x, y, angle), player, maze, mw, mh) = ((x - cellSize, y, -90), player, maze, mw, mh)
@@ -48,21 +66,48 @@ glossEventHandler (EventKey (SpecialKey KeyRight) Down _ _) ((x, y, angle), play
 glossEventHandler _ s = s
 
 
-glossTimeHandler :: Float -> GlossState -> GlossState
-glossTimeHandler _ s = s
+=======
+glossEventHandler (EventKey (SpecialKey KeyUp) Down _ _)    ((x, y, _), player, maze) = ((x, y+20, 0), player, maze) -- move o jogador para cima
+glossEventHandler (EventKey (SpecialKey KeyDown) Down _ _)  ((x, y, _), player, maze) = ((x, y-20, -180), player, maze) -- move o jogador para baixo
+glossEventHandler (EventKey (SpecialKey KeyLeft) Down _ _)  ((x, y, _), player, maze) = ((x-20, y, -90), player, maze) -- move o jogador para a esquerda
+glossEventHandler (EventKey (SpecialKey KeyRight) Down _ _) ((x, y, _), player, maze) = ((x+20, y, 90), player, maze) -- move o jogador para a direita
+glossEventHandler _ s = s -- o estado permanece inalterado, caso o evento não corresponda aos eventos acima
 
+-- Recebe o tempo decorrido desde o último quadro e o estado atual do jogo
+-- Retorna o novo estado do jogo
+>>>>>>> 2c9c7ebc9556245627269272c0d952e2e17ae3d5
+glossTimeHandler :: Float -> GlossState -> GlossState
+glossTimeHandler _ s = s -- no momento, esta função não faz nada, está retornando o mesmo estado
+
+-- Representa a taxa de quadros (frames) por segundo
 fr :: Int 
 fr = 50
 
+<<<<<<< HEAD
 -- Ajuste a função drawMaze para pintar as paredes de branco e o caminho de preto
 drawMaze :: Maze -> Float -> Float -> Picture
 drawMaze maze mazeOffsetX mazeOffsetY =
   Translate mazeOffsetX mazeOffsetY (Pictures [drawCell x y cell | (y, row) <- zip [0..] maze, (x, cell) <- zip [0..] row])
+=======
+-- Representa a janela a ser exibida na tela
+-- O título está entre parênteses
+-- As tuplas representam: (largura, altura) [da janela] e
+-- (pixels a partir do lado esquerdo, pixels a partir do topo)
+dm :: Display
+dm = InWindow "Computing Maze" (800, 600) (300, 50)
+
+-- Recebe um labirinto
+-- Retorna a imagem desse labirinto
+drawMaze :: Maze -> Picture
+drawMaze maze = Pictures [translateToCell x y | (y, row) <- zip [0..] maze, (x, cell) <- zip [0..] row, cell == 1]
+>>>>>>> 2c9c7ebc9556245627269272c0d952e2e17ae3d5
   where
     drawCell x y cell
       | cell == 1 = Translate (fromIntegral x * cellSize) (fromIntegral (-y) * cellSize) (color black (rectangleSolid cellSize cellSize))
       | otherwise = Translate (fromIntegral x * cellSize) (fromIntegral (-y) * cellSize) (color white (rectangleSolid cellSize cellSize))
 
+-- Recebe um estado do jogo (tupla com o estado do jogador, o jogador e o labirinto)
+-- Retorna uma imagem combinada
 drawGlossState :: GlossState -> Picture
 drawGlossState ((x, y, angle), player, maze, mazeWidth, mazeHeight) =
   let screenWidth = (mazeWidth + 4) * round cellSize
@@ -71,15 +116,25 @@ drawGlossState ((x, y, angle), player, maze, mazeWidth, mazeHeight) =
       mazeOffsetY = calculateMazeOffsetY mazeHeight screenHeight
   in Pictures [drawMaze maze mazeOffsetX mazeOffsetY, Translate x y (Rotate angle player)]
 
+<<<<<<< HEAD
 -- Defina o sprite do jogador para ter o mesmo tamanho que uma célula do labirinto
+=======
+-- Um triângulo com coordenadas
+-- Primeira tupla: topo do triângulo
+-- Segunda e terceira tuplas: bases do triângulo
+>>>>>>> 2c9c7ebc9556245627269272c0d952e2e17ae3d5
 triangulo :: Path
 triangulo = [(0, cellSize / 2), (-cellSize / 2, -cellSize / 2), (cellSize / 2, -cellSize / 2)]
 
+-- Um triângulo isósceles com coordenadas
+-- Primeira tupla: topo do triângulo
+-- Segunda e terceira tuplas: bases do triângulo
 trianguloIsosceles :: Path
 trianguloIsosceles = [(0, cellSize / 2), (-cellSize / 2, -cellSize / 2), (cellSize / 2, -cellSize / 2)]
 
 main :: IO()
 main = do
+<<<<<<< HEAD
   let player = scale (cellSize / cellSize) (cellSize / cellSize) $ color red (polygon trianguloIsosceles)
       exampleMaze = maze21x21  -- Use o labirinto que desejar
       mazeWidth = length (head exampleMaze)
@@ -239,3 +294,13 @@ main = do
 --     drawGlossState
 --     glossEventHandler
 --     glossTimeHandler
+=======
+  let player = scale 0.5 0.5 $ color red (polygon trianguloIsosceles) -- jogador (representado por triângulo)
+  play dm -- inicia o jogo
+    black -- cor de fundo da janela do jogo
+    fr -- taxa de quadros
+    (initialGlossState player exampleMaze) -- estado inicial do jogo
+    drawGlossState -- desenha o jogo
+    glossEventHandler -- interação dos eventos no jogo
+    glossTimeHandler -- atualiza o jogo de acordo com o intervalo de tempo
+>>>>>>> 2c9c7ebc9556245627269272c0d952e2e17ae3d5

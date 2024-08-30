@@ -4,6 +4,7 @@
 
 -- type Maze = Array (Int, Int) Int
 
+<<<<<<< HEAD
 -- data Direction = North | South | East | West deriving (Enum, Bounded, Show)
 
 -- move :: (Int, Int) -> Direction -> (Int, Int)
@@ -35,6 +36,35 @@
 --                    then go newGen (carveMaze m (x, y) nextPos d) (nextPos : (x, y) : stack)
 --                    else tryMove m ds (x, y)
 --         in tryMove m directions current
+=======
+-- Define tipos para representar elementos do labirinto
+data ElementType = Space | Wall | Marked | Visited | Door
+    deriving (Eq) -- permite que seja usado == e != para comparações
+
+-- Define as direções para se mover no labirinto
+data Direction = DLeft | DRight | DUp | DDown
+    deriving (Enum)
+
+-- Define a representação do labirinto
+data MazeData = MazeData {
+    width :: Int, -- largura
+    height :: Int, -- altura
+    gen :: StdGen, -- gerador do labirinto
+    maze :: Map (Int, Int) ElementType -- armazena o labirinto, associa coordenadas a um tipo
+}
+
+-- Permite que os valores sejam convertidos em strings para exibição
+instance Show ElementType where
+    show Space = "  " -- dois espaços em branco
+    show Wall = "[]" -- dois colchetes
+    show Marked = "++" -- dois símbolos de adição
+    show Visited = show Space -- dois espaços em branco
+    show Door = show Space -- dois espaços em branco
+
+-- Permite que os valores sejam convertidos em strings para exibição
+instance Show MazeData where
+    show = printMazeMatrix -- converte o labirinto para uma representação textual
+>>>>>>> 2c9c7ebc9556245627269272c0d952e2e17ae3d5
 
 -- carveMaze :: Maze -> (Int, Int) -> (Int, Int) -> Direction -> Maze
 -- carveMaze maze pos nextPos dir =
