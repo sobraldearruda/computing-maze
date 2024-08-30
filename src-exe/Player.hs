@@ -1,4 +1,4 @@
-module Player (Player (..), initialPlayerState) where
+module Player (Player (..), initialPlayerState, triangulo) where
 
 
 import Graphics.Gloss
