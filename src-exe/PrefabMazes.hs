@@ -1,4 +1,4 @@
-module PrefabMazes where
+module PrefabMazes (maze21x21, exampleMaze3) where
 
 maze21x21 :: [[Int]]
 maze21x21 = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]

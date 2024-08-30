@@ -1,5 +1,7 @@
 module Player (Player (..), initialPlayerState) where
 
+
+import Graphics.Gloss
 data Player = Player
     { playerX     :: Float
     , playerY     :: Float
@@ -13,3 +15,6 @@ initialPlayerState mazeOffsetX mazeOffsetY cellSize = Player
     ,   playerY = mazeOffsetX - cellSize
     ,   playerAngle = 90
     }
+
+triangulo :: Path
+triangulo = [(0, cellSize / 2), (-cellSize / 2,-cellSize / 2), (cellSize / 2,-cellSize / 2)]
