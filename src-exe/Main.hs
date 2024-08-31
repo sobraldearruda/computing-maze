@@ -256,13 +256,13 @@ module Main where
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 import Minotaur (Minotaur (..), initialMinotaurState)
-import Maze (Maze (..), cellSize, scaleFactor, maze21x21, exampleMaze3)
+import Maze (Maze (..), cellSize, scaleFactor, maze1, maze2, maze3, maze4, maze5, maze6, maze7, maze8, maze9)
 import Player (Player (..), initialPlayerState, triangulo)
 import Rendering (GlossState (..), drawGlossState, glossEventHandler, glossTimeHandler, initialGlossState, fr)
 
 main :: IO()
 main = do
-  let exampleMaze = exampleMaze3  -- Use o labirinto que desejar
+  let exampleMaze = maze9  -- Use o labirinto que desejar
       mazeWidth = width exampleMaze
       mazeHeight = height exampleMaze
       screenWidth = (mazeWidth + 4) * round cellSize
