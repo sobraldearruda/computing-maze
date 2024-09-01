@@ -253,26 +253,58 @@
 -- =============================================================================================
 
 module Main where
+
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
-import Minotaur (Minotaur (..), initialMinotaurState)
-import Maze (Maze (..), cellSize, scaleFactor, maze1, maze2, maze3, maze4, maze5, maze6, maze7, maze8, maze9)
-import Player (Player (..), initialPlayerState, triangulo)
-import Rendering (GlossState (..), drawGlossState, glossEventHandler, glossTimeHandler, initialGlossState, fr)
+import Menu
+import Player (Player(..), initialPlayerState, triangulo)
+import Minotaur (Minotaur(..), initialMinotaurState)
+import Maze (Maze(..), cellSize, maze9)
+import Rendering (GlossState(..), drawGlossState, glossEventHandler, glossTimeHandler, initialGlossState, fr)
+
+-- Estado do jogo
+data AppState = AppState
+  { menuState :: MenuState
+  , gameState :: Maybe GlossState
+  } deriving (Eq, Show)
+
+-- Função que desenha o estado atual do aplicativo
+drawAppState :: AppState -> Picture
+drawAppState (AppState MainMenu _) = renderMenu MainMenu
+drawAppState (AppState PlayGame (Just gs)) = drawGlossState gs
+drawAppState _ = Blank
+
+-- Função que lida com os eventos do aplicativo
+appEventHandler :: Event -> AppState -> AppState
+appEventHandler event (AppState MainMenu Nothing) =
+  let newMenuState = menuEventHandler(event) MainMenu
+  in case newMenuState of
+       PlayGame -> AppState PlayGame (Just (initialGlossState maze9))
+       ExitGame -> AppState ExitGame Nothing
+       _        -> AppState newMenuState Nothing
+
+appEventHandler event (AppState PlayGame (Just gs)) =
+  AppState PlayGame (Just (glossEventHandler event gs))
+
+appEventHandler _ s = s
+
+-- Função que lida com o tempo do aplicativo
+appTimeHandler :: Float -> AppState -> AppState
+appTimeHandler dt (AppState PlayGame (Just gs)) =
+  AppState PlayGame (Just (glossTimeHandler dt gs))
+
+appTimeHandler _ s = s
 
 main :: IO()
 main = do
-  let exampleMaze = maze9  -- Use o labirinto que desejar
-      mazeWidth = width exampleMaze
-      mazeHeight = height exampleMaze
-      screenWidth = (mazeWidth + 4) * round cellSize
-      screenHeight = (mazeHeight + 2) * round cellSize
+  let screenWidth = 800
+      screenHeight = 600
       dm = InWindow "Computing Maze" (screenWidth, screenHeight) (300, 50)
-      initialState = initialGlossState exampleMaze
+      initialState = AppState MainMenu Nothing
   play dm
     black -- Fundo da tela preto
     fr
     initialState
-    drawGlossState
-    glossEventHandler
-    glossTimeHandler
+    drawAppState
+    appEventHandler
+    appTimeHandler

@@ -46,12 +46,12 @@ getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: 
 
 
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
-bindir     = "/home/sobraldearruda/.cabal/bin"
-libdir     = "/home/sobraldearruda/.cabal/lib/x86_64-linux-ghc-9.4.8/computing-maze-0.1.0.0-inplace-computing-maze"
-dynlibdir  = "/home/sobraldearruda/.cabal/lib/x86_64-linux-ghc-9.4.8"
-datadir    = "/home/sobraldearruda/.cabal/share/x86_64-linux-ghc-9.4.8/computing-maze-0.1.0.0"
-libexecdir = "/home/sobraldearruda/.cabal/libexec/x86_64-linux-ghc-9.4.8/computing-maze-0.1.0.0"
-sysconfdir = "/home/sobraldearruda/.cabal/etc"
+bindir     = "/home/alisson/.cabal/bin"
+libdir     = "/home/alisson/.cabal/lib/x86_64-linux-ghc-9.4.8/computing-maze-0.1.0.0-inplace-computing-maze"
+dynlibdir  = "/home/alisson/.cabal/lib/x86_64-linux-ghc-9.4.8"
+datadir    = "/home/alisson/.cabal/share/x86_64-linux-ghc-9.4.8/computing-maze-0.1.0.0"
+libexecdir = "/home/alisson/.cabal/libexec/x86_64-linux-ghc-9.4.8/computing-maze-0.1.0.0"
+sysconfdir = "/home/alisson/.cabal/etc"
 
 getBinDir     = catchIO (getEnv "computing_maze_bindir")     (\_ -> return bindir)
 getLibDir     = catchIO (getEnv "computing_maze_libdir")     (\_ -> return libdir)
