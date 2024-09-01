@@ -66,7 +66,8 @@ executable computing-maze
                         Player,
                         Minotaur,
                         PrefabMazes,
-                        Rendering    
+                        Rendering, 
+                        Menu 
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
