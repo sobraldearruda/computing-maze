@@ -83,5 +83,5 @@ enigmas =
 
   , Enigma "Eu sigo uma política de cache de memória na qual você é o primeiro a chegar e o primeiro a sair. Quem sou eu?"
       ["LIFO", "FIFO", "MRU", "LFU"]
-      1
+      2
   ]
