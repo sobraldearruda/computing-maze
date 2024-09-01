@@ -272,7 +272,12 @@ data AppState = AppState
 drawAppState :: AppState -> Picture
 drawAppState (AppState MainMenu _) = renderMenu MainMenu
 drawAppState (AppState PlayGame (Just gs)) = drawGlossState gs
+<<<<<<< Updated upstream
 drawAppState _ = Blank
+=======
+drawAppState (AppState Tutorial _) = renderMenu Tutorial
+drawAppState (AppState ExitGame _) = Blank -- Placeholder para sair do jogo
+>>>>>>> Stashed changes
 
 -- Função que lida com os eventos do aplicativo
 appEventHandler :: Event -> AppState -> AppState
@@ -280,12 +285,28 @@ appEventHandler event (AppState MainMenu Nothing) =
   let newMenuState = menuEventHandler(event) MainMenu
   in case newMenuState of
        PlayGame -> AppState PlayGame (Just (initialGlossState maze9))
+<<<<<<< Updated upstream
        ExitGame -> AppState ExitGame Nothing
        _        -> AppState newMenuState Nothing
+=======
+       Tutorial -> AppState Tutorial Nothing
+       ExitGame -> AppState ExitGame Nothing
+       MainMenu -> AppState MainMenu Nothing
+       _        -> AppState newMenuState Nothing -- Manter o menu principal
+>>>>>>> Stashed changes
 
 appEventHandler event (AppState PlayGame (Just gs)) =
   AppState PlayGame (Just (glossEventHandler event gs))
 
+<<<<<<< Updated upstream
+=======
+appEventHandler event (AppState Tutorial _) =
+  let newMenuState = menuEventHandler event Tutorial
+  in case newMenuState of
+       MainMenu -> AppState MainMenu Nothing
+       _        -> AppState Tutorial Nothing
+
+>>>>>>> Stashed changes
 appEventHandler _ s = s
 
 -- Função que lida com o tempo do aplicativo
