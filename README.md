@@ -1,6 +1,6 @@
 # `Computing Maze` 
 
-# é um jogo 2D de simulação de labirinto em um contexto do curso de Ciência da Computação.
+**Um jogo 2D de simulação de labirinto em um contexto do curso de Ciência da Computação.**
 ***
 
 ## Haskell
@@ -16,6 +16,9 @@ cabal run
 - Recomendamos que você jogue com o terminal em tela cheia para evitar problemas na interface.
 
 ***
+
+### Grupo
+
 **José Alisson Araújo Pordeus**
 
 **Pedro Arthur de Oliveiro Barreto**
