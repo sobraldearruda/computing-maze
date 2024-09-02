@@ -1,4 +1,9 @@
-module Menu where
+module Menu (
+    MenuState (..),
+    renderMenu,
+    menuEventHandler,
+    menuTimeHandler
+) where
 
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
