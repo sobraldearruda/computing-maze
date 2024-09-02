@@ -1,6 +1,6 @@
 # <h1 align="center"> `Computing Maze` </h1>
 
-<h1 align="center"> Um jogo 2D de simulação de labirinto em um contexto do curso de Ciência da Computação. </h1>
+<h3 align="center"> Um jogo 2D de simulação de labirinto em um contexto do curso de Ciência da Computação. </h3>
 
 ![image](https://github.com/user-attachments/assets/9fd7be8d-7a8f-4ced-8492-b08b8de46467)
 
@@ -18,15 +18,3 @@ cabal run
 
 > [!NOTE]
 > Recomendamos que você jogue com o terminal em tela cheia para evitar problemas na interface.
-
-## Equipe
-
-José Alisson Araújo Pordeus
-
-Pedro Arthur de Oliveiro Barreto
-
-Pedro Nascimento da Silva
-
-Rafael de Arruda Sobral
-
-Thiago de Moura Lima
