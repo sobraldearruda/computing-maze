@@ -1,6 +1,6 @@
 # <h1 align="center"> `Computing Maze` </h1>
 
-<h3 align="center"> Um jogo 2D de simulação de labirinto em um contexto do curso de Ciência da Computação. </h3>
+<h4 align="center"> Um jogo 2D de simulação de labirinto em um contexto do curso de Ciência da Computação </h4>
 
 ![image](https://github.com/user-attachments/assets/9fd7be8d-7a8f-4ced-8492-b08b8de46467)
 
