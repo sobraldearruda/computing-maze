@@ -3,7 +3,7 @@
 **Um jogo 2D de simulação de labirinto em um contexto do curso de Ciência da Computação.**
 ***
 
-![image](https://drive.google.com/file/d/1uY0wlpcRG5bhe1_Txl07u8CZwaIgJcQB/view?usp=sharing)
+![image](https://github.com/user-attachments/assets/9fd7be8d-7a8f-4ced-8492-b08b8de46467)
 
 ## Especificação
 
