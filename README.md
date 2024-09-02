@@ -5,7 +5,7 @@
 
 ## Especificação
 
-- [Clique aqui] (https://drive.google.com/file/d/1UtEVLC9ee2bY4JHJCjS_nfQyT0yd_1WY/view?usp=sharing)
+- [Clique aqui](https://drive.google.com/file/d/1UtEVLC9ee2bY4JHJCjS_nfQyT0yd_1WY/view?usp=sharing)
 
 ## Haskell
 
