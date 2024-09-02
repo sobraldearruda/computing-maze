@@ -118,7 +118,7 @@ glossTimeHandler dt glossState =
                         then (moveTowards m p) { delayTime = 1.5 }
                         else m { delayTime = newDelay }
       playerMinotaurCollision = playerX p == minotaurX m && playerY p == minotaurY m
-      newState = initialGlossState (mazeIndex glossState + 1)
+      newState = initialGlossState (mazeIndex glossState)
   in case gameState glossState of
        Playing ->
          if hasWon
