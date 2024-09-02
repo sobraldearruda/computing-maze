@@ -51,7 +51,7 @@ isWalkable maze x y =
 
 -- Defina os labirintos como uma lista
 mazes :: [Maze]
-mazes = [maze1, maze2, maze3, maze4, maze5, maze6, maze7, maze8, maze9]
+mazes = [maze1, maze2, maze3, maze4, maze5, maze6, maze7, maze8, maze9, maze10]
 
 -- Mazes predefinidos
 maze1 :: Maze
@@ -311,6 +311,13 @@ maze9 = Maze
   [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
   [0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0], -- saída
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+    , width = length (head (grid maze9))
+    , height = length (grid maze9)
+  }
+
+maze10 :: Maze
+maze10 = Maze
+  { grid = [[]]
     , width = length (head (grid maze9))
     , height = length (grid maze9)
   }

@@ -1,4 +1,5 @@
 module Main where
+
 import Graphics.Gloss
 import Maze (Maze (..), cellSize, mazes)
 import Rendering (drawGlossState, glossEventHandler, glossTimeHandler, initialGlossState, fr)

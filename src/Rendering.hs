@@ -94,11 +94,14 @@ glossEventHandler event glossState =
     SolvingEnigma ->
       let enigmaSt = enigmaState glossState
           updatedEnigmaState = enigmaEventHandler event enigmaSt
+          maxIndex = 8  -- Supondo que você tem 9 enigmas, índices de 0 a 8
           newState = initialGlossState (mazeIndex glossState + 1)
       in case event of
            EventKey (SpecialKey KeyEnter) Down _ _ ->
              if selectedOption enigmaSt == correctAnswer enigmaSt
-             then newState { gameState = Playing }
+             then if mazeIndex glossState == maxIndex
+                    then glossState { gameState = Won }
+                    else newState { gameState = Playing }
              else glossState { gameState = GameOver }
            _ -> glossState { enigmaState = updatedEnigmaState }
 

@@ -107,4 +107,8 @@ enigmas =
       "Sometimes, people call me 'reasearch'. Who am I?"
       ["Analysis", "Methodology", "Theoretical background", "References"]
       1
+  , Enigma ""
+      ""
+      []
+      3
   ]
