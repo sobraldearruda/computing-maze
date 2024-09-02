@@ -1,20 +1,15 @@
-# `Computing Maze` é um jogo 2D de simulação de labirinto em um contexto do curso de Ciência da Computação.
-
-## Demo do jogo
-
-<link>
+`Computing Maze` é um jogo 2D de simulação de labirinto em um contexto do curso de Ciência da Computação.
+***
 
 ## Haskell
 
-### Para executar o projeto em Haskell:
-
-- Execute o comando
+- Execute o comando:
 
 ```
 cabal run
 ```
 
-### Observações
+## Observações
 
 - Recomendamos que você jogue com o terminal em tela cheia para evitar problemas na interface.
 
