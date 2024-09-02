@@ -35,10 +35,18 @@ license:            MIT
 license-file:       LICENSE
 
 -- The package author(s).
-author:             Pedro Arthur
+author:             José Alisson Araújo Pordeus
+                    Pedro Arthur de Oliveiro Barreto
+                    Pedro Nascimento da Silva
+                    Rafael de Arruda Sobral
+                    Thiago de Moura Lima
 
--- An email address to which users can send suggestions, bug reports, and patches.
-maintainer:         pedro.arthur.barreto@ccc.ufcg.edu.br
+-- An email addresses to which users can send suggestions, bug reports, and patches.
+maintainer:         jose.pordeus@ccc.ufcg.edu.br
+                    pedro.arthur.barreto@ccc.ufcg.edu.br
+                    pedro.nascimento.silva@ccc.ufcg.edu.br
+                    rafael.sobral@ccc.ufcg.edu.br
+                    thiago.moura.lima@ccc.ufcg.edu.br
 
 -- A copyright notice.
 -- copyright:
@@ -46,17 +54,17 @@ category:           Game
 build-type:         Simple
 
 -- Extra doc files to be distributed with the package, such as a CHANGELOG or a README.
-extra-doc-files:    CHANGELOG.md
+extra-doc-files:    README.md
 
 -- Extra source files to be distributed with the package, such as examples, or a tutorial module.
 -- extra-source-files:
 
-common warnings
-    ghc-options: -Wall
+-- common warnings
+--    ghc-options: -Wall
 
 executable computing-maze
     -- Import common warning flags.
-    import:           warnings
+    -- import:           warnings
 
     -- .hs or .lhs file containing the Main module.
     main-is:          Main.hs
@@ -68,13 +76,13 @@ executable computing-maze
                         Menu,
                         Minotaur,
                         Player,
-                        Rendering    
+                        Rendering
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:      base >=4.17 && <5,
+    build-depends:      base >= 4.17 && < 5,
                         gloss,
                         array,
                         containers,
@@ -83,7 +91,7 @@ executable computing-maze
                         vector >= 0.12
 
     -- Directories containing source files.
-    hs-source-dirs:   src-exe
+    hs-source-dirs:   src
 
     -- Base language which the package is written in.
     default-language: Haskell2010
