@@ -11,13 +11,22 @@ import Rendering (GlossState(..), initialGlossState, drawGlossState, glossEventH
 import Menu (MenuState (..), renderMenu, menuEventHandler)
 import Debug.Trace (trace)
 
--- Estado do jogo
+-- Estado do jogo.
+-- Define o estado do aplicativo com dois campos:
+-- menuState: Representa o estado atual do menu.
+-- gameState: Representa o estado atual do jogo (pode ser Nothing se o jogo ainda não tiver iniciado).
 data AppState = AppState
   { menuState :: MenuState
   , gameState :: Maybe GlossState
   } deriving (Eq, Show)
 
--- Função que desenha o estado atual do aplicativo
+-- Função que desenha o estado atual do aplicativo.
+-- Dependendo do estado do aplicativo, esta função desenha o menu ou o estado do jogo.
+-- Se o estado for MainMenu, desenha o menu principal.
+-- Se o estado for PlayGame e o jogo não tiver sido inicializado, desenha uma tela em branco.
+-- Se o estado for PlayGame e o jogo estiver em andamento, desenha o estado atual do jogo.
+-- Se o estado for Tutorial, desenha o menu do tutorial.
+-- Se o estado for ExitGame, desenha uma tela em branco.
 drawAppState :: AppState -> Picture
 drawAppState state = trace ("Drawing state: " ++ show state) $
   case state of
@@ -27,7 +36,11 @@ drawAppState state = trace ("Drawing state: " ++ show state) $
     AppState Tutorial _ -> renderMenu Tutorial
     AppState ExitGame _ -> Blank
 
--- Função que lida com os eventos do aplicativo
+-- Função que lida com os eventos do aplicativo.
+-- Dependendo do estado atual e do evento ocorrido, esta função atualiza o estado do aplicativo.
+-- No estado MainMenu, pode iniciar o jogo, sair do jogo ou abrir o tutorial.
+-- No estado PlayGame, delega o tratamento do evento para a função glossEventHandler.
+-- No estado Tutorial, pode retornar ao menu principal.
 appEventHandler :: Event -> AppState -> AppState
 appEventHandler event (AppState MainMenu Nothing) =
   let newMenuState = menuEventHandler event MainMenu
@@ -48,7 +61,10 @@ appEventHandler event (AppState Tutorial _) =
 
 appEventHandler _ s = s
 
--- Função que lida com o tempo do aplicativo
+-- Função que lida com o tempo do aplicativo.
+-- Atualiza o estado do jogo com base na passagem do tempo.
+-- Somente o estado PlayGame é afetado pela passagem do tempo, onde a função glossTimeHandler 
+-- é usada para atualizar o estado do jogo.
 appTimeHandler :: Float -> AppState -> AppState
 appTimeHandler dt (AppState PlayGame (Just gs)) =
   AppState PlayGame (Just (glossTimeHandler dt gs))

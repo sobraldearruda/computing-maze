@@ -8,14 +8,21 @@ module Menu (
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 
+-- Tipo de dado 'MenuState', que representa os diferentes estados possíveis do menu:
+-- 'MainMenu', 'PlayGame', 'Tutorial' e 'ExitGame'.
 data MenuState = MainMenu | PlayGame | Tutorial | ExitGame deriving (Eq, Show)
 
--- Desenha o menu principal
+-- Desenha a interface do menu com base no estado atual do menu.
+-- Dependendo do estado do menu, a função retorna diferentes 'Picture'.
+-- Se o estado for 'MainMenu', a função desenha o menu principal com as opções de
+-- iniciar o jogo, acessar o tutorial, ou sair do jogo.
+-- Se o estado for 'Tutorial', a função desenha a tela do tutorial com instruções sobre o jogo.
+-- Para os estados 'PlayGame' e 'ExitGame', a função retorna 'Blank', pois são placeholders.
 renderMenu  :: MenuState -> Picture
 renderMenu  MainMenu = Pictures
     [ Translate (-400) 150 $ Scale 0.5 0.5 $ Color green $ Text "* COMPUTING MAZE *"
-    , Translate (-400) 0  $ Scale 0.5 0.5 $ Color yellow $ Text "1. Play Game"
-    , Translate (-400) (-100)   $ Scale 0.5 0.5 $ Color yellow $ Text "2. Tutorial"
+    , Translate (-400) 0 $ Scale 0.5 0.5 $ Color yellow $ Text "1. Play Game"
+    , Translate (-400) (-100) $ Scale 0.5 0.5 $ Color yellow $ Text "2. Tutorial"
     , Translate (-400) (-200) $ Scale 0.5 0.5 $ Color yellow $ Text "3. Exit Game"
     ]
 
@@ -36,14 +43,22 @@ renderMenu  Tutorial = Pictures
     ]
 renderMenu  ExitGame = Blank  -- Placeholder
 
--- Manipula os eventos do menu
+-- Lida com os eventos do menu.
+-- Dependendo da tecla pressionada, a função altera o estado do menu.
+-- Se a tecla '1' for pressionada, o estado muda para 'PlayGame'.
+-- Se a tecla '2' for pressionada, o estado muda para 'Tutorial'.
+-- Se a tecla '3' for pressionada, o estado muda para 'ExitGame'.
+-- Se a tecla '4' for pressionada, o estado retorna ao 'MainMenu', mas isso só ocorre
+-- se o estado atual for 'Tutorial'.
 menuEventHandler :: Event -> MenuState -> MenuState
 menuEventHandler (EventKey (Char '1') Down _ _) _ = PlayGame
 menuEventHandler (EventKey (Char '2') Down _ _) _ = Tutorial
 menuEventHandler (EventKey (Char '3') Down _ _) _ = ExitGame
-menuEventHandler (EventKey (Char '4') Down _ _) _ = MainMenu -- Só é ativado quando está na aba de Tutorial
+menuEventHandler (EventKey (Char '4') Down _ _) _ = MainMenu
 menuEventHandler _ s = s
 
--- Função para processar o estado do menu (neste caso, não faz nada com o tempo)
+-- Processa o estado do menu ao longo do tempo.
+-- No contexto atual, essa função não altera o estado do menu, ela simplesmente retorna
+-- o estado atual inalterado, pois o tempo não influencia o menu.
 menuTimeHandler :: Float -> MenuState -> MenuState
 menuTimeHandler _ s = s

@@ -6,6 +6,8 @@ import Rendering (drawGlossState, glossEventHandler, glossTimeHandler, initialGl
 import AppRendering (AppState(..), drawAppState, appEventHandler, appTimeHandler)
 import Menu (MenuState(..))
 
+-- Função principal do jogo.
+-- Configura a janela do jogo, define o estado inicial e inicia o loop principal do jogo.
 main :: IO()
 main = do
   let screenWidth = 900
@@ -13,7 +15,7 @@ main = do
       dm = InWindow "Computing Maze" (screenWidth, screenHeight) (100, 60)
       initialState = AppState MainMenu Nothing
   play dm
-    black -- Fundo da tela preto
+    black
     60
     initialState
     drawAppState

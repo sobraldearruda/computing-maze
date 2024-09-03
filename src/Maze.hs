@@ -11,37 +11,54 @@ module Maze (
 
 import Graphics.Gloss
 
--- Criação do tipo de dado Maze
+-- Define a estrutura de dados 'Maze', que representa um labirinto.
+-- O labirinto é composto por uma matriz de inteiros, onde cada inteiro 
+-- representa uma célula do labirinto (0 para parede, 1 para caminho, 
+-- e 2 para a saída). Além disso, são armazenadas as dimensões 
+-- (largura e altura) do labirinto para fácil acesso.
 data Maze = Maze
-    { grid :: [[Int]] -- A matriz do labirinto
-    , width :: Int -- O comprimento do labirinto, já que é acessado frequentemente
-    , height :: Int -- A altura do labirinto, já que é acessado freqeuentemente
+    { grid :: [[Int]]
+    , width :: Int
+    , height :: Int
     } deriving (Show, Eq)
 
--- Fator para mudar a escala do labirinto, player e etc
+-- Fator de escala aplicado ao tamanho das células do labirinto, do jogador, e de outros 
+-- elementos visuais.
 scaleFactor :: Float
 scaleFactor = 0.7
 
--- Define o tamanho de cada célula do labirinto
+-- Define o tamanho de cada célula do labirinto após a aplicação do fator de escala.
 cellSize :: Float
 cellSize = 40 * scaleFactor
 
--- Calcula o deslocamento para centralizar o labirinto na tela
+-- Calcula o deslocamento horizontal e vertical necessários para centralizar o labirinto na tela, 
+-- com base na largura e na altura da tela fornecida.
 calculateMazeOffsetX, calculateMazeOffsetY :: Int -> Float
 calculateMazeOffsetX screenWidth = - (fromIntegral screenWidth / 2) + 2.5 * cellSize
 calculateMazeOffsetY screenHeight = fromIntegral screenHeight / 2 - (1.5 * cellSize)
 
--- Desenha o labirinto, pintando as paredes de branco e o caminho de preto
+-- Desenha o labirinto na tela, colorindo as células de acordo com seu valor:
+-- 0 para paredes (branco), 1 para caminhos (preto), e 2 para a saída (verde).
+-- @param maze - O labirinto a ser desenhado.
+-- @param mazeOffsetX - Deslocamento horizontal para desenhar o labirinto.
+-- @param mazeOffsetY - Deslocamento vertical para desenhar o labirinto.
+-- @return Um objeto 'Picture' que representa o labirinto desenhado.
 drawMaze :: Maze -> Float -> Float -> Picture
 drawMaze maze mazeOffsetX mazeOffsetY =
   Translate mazeOffsetX mazeOffsetY (Pictures [drawCell x y cell | (y, row) <- zip [0::Integer ..] (grid maze), (x, cell) <- zip [0::Integer ..] row])
   where
+    -- Desenha uma célula individual do labirinto com base em suas coordenadas e tipo.
+    -- @param x - Coordenada x da célula.
+    -- @param y - Coordenada y da célula.
+    -- @param cell - Tipo da célula (0, 1, ou 2).
+    -- @return Um objeto 'Picture' que representa a célula desenhada.
     drawCell x y cell
       | cell == 1 = Translate (fromIntegral x * cellSize) (fromIntegral (-y) * cellSize) (color black (rectangleSolid cellSize cellSize))
       | cell == 2 = Translate (fromIntegral x * cellSize) (fromIntegral (-y) * cellSize) (color green (rectangleSolid cellSize cellSize))
       | otherwise = Translate (fromIntegral x * cellSize) (fromIntegral (-y) * cellSize) (color white (rectangleSolid cellSize cellSize))
 
--- Verifica se uma posição (x, y) no labirinto é caminhável, ou seja, se não é parede
+-- Verifica se uma determinada posição no labirinto é caminhável, ou seja, se não é uma parede.
+-- Uma posição é considerada caminhável se o valor na matriz for 1 ou 2.
 isWalkable :: Maze -> Float -> Float -> Bool
 isWalkable maze x y =
     let gridX = floor ((x + fromIntegral (width maze) * cellSize / 2) / cellSize)
@@ -49,17 +66,18 @@ isWalkable maze x y =
         isValidPosition = gridX >= 0 && gridX < width maze && gridY >= 0 && gridY < height maze
     in isValidPosition && (grid maze !! gridY !! gridX == 1 || grid maze !! gridY !! gridX == 2)
 
--- Defina os labirintos como uma lista
+-- Uma lista de labirintos predefinidos para serem utilizados no jogo.
 mazes :: [Maze]
 mazes = [maze1, maze2, maze3, maze4, maze5, maze6, maze7, maze8, maze9, maze10]
 
--- Mazes predefinidos
+-- Definição do primeiro labirinto predefinido. 
+-- Este labirinto faz parte da lista 'mazes'.
 maze1 :: Maze
 maze1 = Maze
   {
     grid = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 2, 0], -- saída
+  [0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 2, 0],
   [0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
   [0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0],
   [0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
@@ -83,6 +101,8 @@ maze1 = Maze
   , height = length (grid maze1)
   }
 
+-- Definição do segundo labirinto predefinido. 
+-- Este labirinto faz parte da lista 'mazes'.
 maze2 :: Maze
 maze2 = Maze
   {
@@ -92,7 +112,7 @@ maze2 = Maze
   [0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
   [0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
   [0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-  [0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 0], -- saída
+  [0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 0],
   [0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
   [0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0],
   [0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0],
@@ -112,6 +132,8 @@ maze2 = Maze
     , height = length (grid maze2)
   }
 
+-- Definição do terceiro labirinto predefinido. 
+-- Este labirinto faz parte da lista 'mazes'.
 maze3 :: Maze
 maze3 = Maze
   {
@@ -135,12 +157,14 @@ maze3 = Maze
   [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0],
   [0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0],
   [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-  [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 0, 1, 1, 1, 0], -- saída
+  [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 0, 1, 1, 1, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
     , width = length (head (grid maze3))
     , height = length (grid maze3)
   }
 
+-- Definição do quarto labirinto predefinido. 
+-- Este labirinto faz parte da lista 'mazes'.
 maze4 :: Maze
 maze4 = Maze
   {
@@ -165,17 +189,19 @@ maze4 = Maze
   [0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0],
   [0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
   [0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]] -- saída
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
     , width = length (head (grid maze4))
     , height = length (grid maze4)
   }
 
+-- Definição do quinto labirinto predefinido. 
+-- Este labirinto faz parte da lista 'mazes'.
 maze5 :: Maze
 maze5 = Maze
   {
     grid = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  [0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 2, 0], -- saída
+  [0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 2, 0],
   [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0],
   [0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0],
   [0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0],
@@ -199,6 +225,8 @@ maze5 = Maze
     , height = length (grid maze5)
   }
 
+-- Definição do sexto labirinto predefinido. 
+-- Este labirinto faz parte da lista 'mazes'.
 maze6 :: Maze
 maze6 = Maze
   {
@@ -222,17 +250,19 @@ maze6 = Maze
   [0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0],
   [0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0],
   [0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0],
-  [0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 2, 0], -- saída
+  [0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 2, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
     , width = length (head (grid maze6))
     , height = length (grid maze6)
   }
 
+-- Definição do sétimo labirinto predefinido. 
+-- Este labirinto faz parte da lista 'mazes'.
 maze7 :: Maze
 maze7 = Maze
   {
     grid = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], -- saída
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 1, 1, 0],
   [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0],
   [0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0],
@@ -257,6 +287,8 @@ maze7 = Maze
     , height = length (grid maze7)
   }
 
+-- Definição do oitavo labirinto predefinido. 
+-- Este labirinto faz parte da lista 'mazes'.
 maze8 :: Maze
 maze8 = Maze
   {
@@ -281,11 +313,13 @@ maze8 = Maze
   [0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0],
   [0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0],
   [0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]] -- saída
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
     , width = length (head (grid maze8))
     , height = length (grid maze8)
   }
 
+-- Definição do nono labirinto predefinido. 
+-- Este labirinto faz parte da lista 'mazes'.
 maze9 :: Maze
 maze9 = Maze
   {
@@ -309,12 +343,14 @@ maze9 = Maze
   [0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0],
   [0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0],
   [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
-  [0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0], -- saída
+  [0, 2, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
     , width = length (head (grid maze9))
     , height = length (grid maze9)
   }
 
+-- Definição do décimo labirinto predefinido. 
+-- Este labirinto faz parte da lista 'mazes'.
 maze10 :: Maze
 maze10 = Maze
   { grid = [[]]

@@ -9,16 +9,27 @@ module Enigmas (
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 
+-- Estado do Enigma.
+-- Define o estado atual do enigma, incluindo:
+-- enigmaIndex: Índice do enigma atual.
+-- enigmaQuestion1: Primeira parte da pergunta do enigma.
+-- enigmaQuestion2: Segunda parte da pergunta do enigma.
+-- enigmaOptions: Lista de opções de resposta.
+-- correctAnswer: Índice da resposta correta.
+-- selectedOption: Índice da opção atualmente selecionada (inicialmente -1, indicando nenhuma opção selecionada).
 data EnigmaState = EnigmaState
   { enigmaIndex :: Int
-  , enigmaQuestion1  :: String
-  , enigmaQuestion2  :: String
+  , enigmaQuestion1 :: String
+  , enigmaQuestion2 :: String
   , enigmaOptions :: [String]
   , correctAnswer :: Int
   , selectedOption :: Int
   } deriving (Eq, Show)
 
--- Função para criar um estado inicial do Enigma usando o enigma do índice 0
+-- Função para criar um estado inicial do Enigma usando o enigma do índice fornecido.
+-- Esta função inicializa o estado do enigma com base no índice do enigma especificado.
+-- O estado inclui as perguntas, as opções de resposta, o índice da resposta correta e a 
+-- opção selecionada (inicialmente nenhuma).
 initialEnigmaState :: Int -> EnigmaState
 initialEnigmaState n = 
   let index = n 
@@ -28,10 +39,12 @@ initialEnigmaState n =
   , enigmaQuestion2 = question2 (enigmas !! index)
   , enigmaOptions = options (enigmas !! index)
   , correctAnswer = correctAnswerIndex (enigmas !! index)
-  , selectedOption = -1  -- Nenhuma opção selecionada
+  , selectedOption = -1
   }
 
--- Função para renderizar o enigma na tela
+-- Função para renderizar o enigma na tela.
+-- Esta função desenha as perguntas e as opções do enigma na tela, junto com a opção atualmente selecionada.
+-- As opções são numeradas de 1 a 4, e a seleção atual é destacada.
 renderEnigma :: EnigmaState -> Picture
 renderEnigma enigmaState = Pictures
   [ Translate (-430) 200 $ Scale 0.15 0.15 $ Color white $ Text (enigmaQuestion1 enigmaState)
@@ -44,7 +57,10 @@ renderEnigma enigmaState = Pictures
   , Translate (-430) (-200) $ Scale 0.15 0.15 $ Color yellow $ Text "Press 'Enter' to confirm your answer."
   ]
 
--- Função para manipular a seleção do enigma
+-- Função para manipular a seleção do enigma.
+-- Esta função lida com eventos de teclado que permitem ao jogador selecionar uma opção de resposta.
+-- As teclas '1', '2', '3' e '4' permitem a seleção das respectivas opções.
+-- Outros eventos são ignorados.
 enigmaEventHandler :: Event -> EnigmaState -> EnigmaState
 enigmaEventHandler (EventKey (Char '1') Down _ _) enigmaState = enigmaState { selectedOption = 0 }
 enigmaEventHandler (EventKey (Char '2') Down _ _) enigmaState = enigmaState { selectedOption = 1 }
@@ -52,13 +68,17 @@ enigmaEventHandler (EventKey (Char '3') Down _ _) enigmaState = enigmaState { se
 enigmaEventHandler (EventKey (Char '4') Down _ _) enigmaState = enigmaState { selectedOption = 3 }
 enigmaEventHandler _ enigmaState = enigmaState
 
+-- Tipo de dado que representa um Enigma.
+-- Um enigma consiste em duas partes de uma pergunta, uma lista de opções de resposta,
+-- e o índice da opção correta.
 data Enigma = Enigma
-  { question1 :: String            -- A pergunta do enigma
-  , question2 :: String            -- Continuação da pergunta do enigma
-  , options  :: [String]           -- As opções de resposta
-  , correctAnswerIndex :: Int      -- O índice da resposta correta
+  { question1 :: String
+  , question2 :: String
+  , options :: [String]
+  , correctAnswerIndex :: Int
   }
 
+-- Lista de enigmas disponíveis no jogo.
 type Enigmas = [Enigma]
 
 enigmas :: Enigmas
