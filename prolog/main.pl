@@ -1,41 +1,49 @@
-/* Definindo o módulo main e importando enigmas.*/
+/* Define o módulo e importa outros módulos.*/
 :- module(main, [main/0]).
 :- use_module(enigmas).
+:- use_module(maze).
 
-/* Função principal para jogar o jogo dos enigmas.*/
+/* Predicado principal para o jogo.*/
 main :-
-    writeln('Bem-vindo ao Jogo dos Enigmas!'),
+    writeln('### COMPUTING MAZE ###'),
     enigmas(Enigmas),
     length(Enigmas, NumEnigmas),
-    play_enigma_loop(0, NumEnigmas),
-    writeln('Parabéns! Você concluiu todos os enigmas!').
+    play_enigma_loop(0, NumEnigmas, 1),  % Adiciona um contador de labirinto (iniciando em 1)
+    writeln('Congratulations! You finished all COMPUTING MAZEs!'),
+    writeln('### COMPUTING MAZE ###').
 
-/* Função recursiva para percorrer todos os enigmas.*/
-play_enigma_loop(CurrentIndex, TotalEnigmas) :-
+/* Predicado recursivo para percorrer todos os enigmas e imprimir labirintos.*/
+play_enigma_loop(CurrentIndex, TotalEnigmas, LabIndex) :-
     (CurrentIndex < TotalEnigmas ->
         initial_enigma_state(CurrentIndex, EnigmaState),
-        play_single_enigma(EnigmaState),
+        play_single_enigma(EnigmaState, LabIndex, NextLabIndex),  % Passa o índice do labirinto
         NextIndex is CurrentIndex + 1,
-        play_enigma_loop(NextIndex, TotalEnigmas)
+        play_enigma_loop(NextIndex, TotalEnigmas, NextLabIndex)  % Atualiza o índice do labirinto
     ;
         true
     ).
 
-/* Função para jogar um único enigma até acertar a resposta.*/
-play_single_enigma(EnigmaState) :-
+/* Predicado para jogar um único enigma até acertar a resposta e imprimir o labirinto.*/
+play_single_enigma(EnigmaState, LabIndex, NextLabIndex) :-
+    imprimir_proximo_labirinto(LabIndex, NextLabIndex),  % Imprime o labirinto antes de mostrar o enigma
     render_enigma(EnigmaState),
-    writeln('Escolha uma opção:'),
+    writeln('Choose an option: '),
     read_line_to_string(user_input, Option),
     (enigma_event_handler(Option, EnigmaState, UpdatedState) ->
-        % Caso a opção seja válida
         UpdatedState = enigma_state(_, _, _, CorrectAnswer, SelectedOption),
         (SelectedOption == CorrectAnswer ->
-            writeln('Resposta correta!'), nl
+            writeln('Great. You are right!'), nl
         ;
-            writeln('Resposta incorreta. Tente novamente.'), nl,
-            play_single_enigma(UpdatedState)
+            writeln('Wrong answer. Try again.'), nl,
+            play_single_enigma(UpdatedState, LabIndex, NextLabIndex)
         )
     ;
-        % Se a opção for inválida, exibe a mensagem e repete o enigma
-        play_single_enigma(EnigmaState)
+        play_single_enigma(EnigmaState, LabIndex, NextLabIndex)
     ).
+
+/* Predicado para imprimir o próximo labirinto baseado no índice atual.*/
+imprimir_proximo_labirinto(LabIndex, NextLabIndex) :-
+    labirinto(LabIndex, Lab),
+    format('Maze ~d:', [LabIndex]), nl,
+    imprimir_labirinto(Lab), nl,
+    NextLabIndex is LabIndex + 1.  % Incrementa o índice para o próximo labirinto

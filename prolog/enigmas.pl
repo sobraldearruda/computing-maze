@@ -1,4 +1,4 @@
-/* Definindo o módulo enigmas e os predicados exportados.*/
+/* Define o módulo e os predicados exportados.*/
 :- module(enigmas, [
     initial_enigma_state/2,
     render_enigma/1,
@@ -7,27 +7,27 @@
     enigmas/1
 ]).
 
-/* Definindo o estado do Enigma.
-   Estado é representado como enigma_state/5.
+/* Definindo o estado do enigma.
+   O estado é representado como enigma_state/5.
    enigma_state(Índice do Enigma, Pergunta, Opções, Resposta Correta, Opção Selecionada).*/
 :- dynamic enigma_state/5.
 
-/* Função para criar o estado inicial do enigma.*/
+/* Predicado para criar o estado inicial do enigma.*/
 initial_enigma_state(Index, EnigmaState) :-
     enigmas(Enigmas),
     nth0(Index, Enigmas, enigma(Question, Options, CorrectAnswer)),
     EnigmaState = enigma_state(Index, Question, Options, CorrectAnswer, -1). % -1 indica que nenhuma opção foi selecionada
 
-/* Função para renderizar o enigma no terminal.*/
+/* Predicado para renderizar o enigma no terminal.*/
 render_enigma(EnigmaState) :-
     EnigmaState = enigma_state(_, Question, Options, _, _),
-    writeln('Pergunta:'),
+    writeln('Enigma: '),
     writeln(Question),
-    writeln('Opções de resposta:'),
+    writeln('Options: '),
     display_options(Options),
     nl.
 
-/* Função auxiliar para exibir as opções com índices.*/
+/* Predicado auxiliar para exibir as opções com índices.*/
 display_options(Options) :-
     display_options(Options, 1).
 display_options([], _).
@@ -36,7 +36,7 @@ display_options([Option | Rest], Index) :-
     NextIndex is Index + 1,
     display_options(Rest, NextIndex).
 
-/* Função para manipular a seleção de opções do enigma.*/
+/* Predicado para manipular a seleção de opções do enigma.*/
 enigma_event_handler(Option, EnigmaState, UpdatedState) :-
     % Verifica se a opção é válida
     valid_input(Option, EnigmaState),
@@ -45,7 +45,7 @@ enigma_event_handler(Option, EnigmaState, UpdatedState) :-
     UpdatedOption is OptionNumber - 1,  % Ajusta para índice de 0 a N
     UpdatedState = enigma_state(Index, Question, Options, CorrectAnswer, UpdatedOption).
 
-/* Função para verificar se a opção selecionada é válida.*/
+/* Predicado para verificar se a opção selecionada é válida.*/
 valid_input(Option, enigma_state(_, _, Options, _, _)) :-
     atom_number(Option, OptionNumber),  /*Tenta converter o input para número.*/
     length(Options, Length),  /*Obtém o número de opções disponíveis.*/
@@ -53,34 +53,34 @@ valid_input(Option, enigma_state(_, _, Options, _, _)) :-
     OptionNumber =< Length,  /*O número deve ser no maximo o número de opções.*/
     !.
 valid_input(_, _) :-  /*Se falhar, exibe mensagem de erro e falha.*/
-    writeln('Opção inválida! Por favor, insira um número entre 1 e 4.'), fail.
+    writeln('Invalid option! Please, write a number between 1 and 4.'), fail.
 
 /* Lista de enigmas disponíveis no jogo.*/
 enigmas([
-    enigma("Se você volta ao início do labirinto repetidamente, então você é um(a): ",
-        ["Pilha", "Fila", "Estrutura de laço", "Recursão"], 2),
+    enigma("If you return to the start of the maze over and over again, then you are a: ",
+        ["Stack", "Queue", "Loop structure", "Recursion"], 2),
 
-    enigma("Sou a seguinte sequência de números: [0, 1, 1, 2, 3, 5, 8, 13, 21, ...]. Quem sou eu?",
-        ["Sequência de Fibonacci", "Sequência aritmética", "Sequência geométrica", "Série de Taylor"], 0),
+    enigma("I am the following sequence of numbers: [0, 1, 1, 2, 3, 5, 8, 13, 21, ...]. Who am I? ",
+        ["Fibonacci sequence", "Arithmetic sequence", "Geometric sequence", "Taylor series"], 0),
 
-    enigma("Você é o último a chegar aqui, mas será o primeiro a sair. Quem é você?",
-        ["Fila", "Pilha", "Lista encadeada", "Árvore binária"], 1),
+    enigma("You are the last to arrive here, but you will be the first to leave. Who are you? ",
+        ["Queue", "Stack", "Linked list", "Binary tree"], 1),
 
-    enigma("Tenho um fim, mas sigo caminhos paralelos até chegar lá. Quem sou eu?",
-        ["Máquina de Turing", "Autômato finito determinístico", "Autômato finito não determinístico", "Gramática livre de contexto"], 2),
+    enigma("I have an end, but I follow parallel paths until I get there. Who am I? ",
+        ["Turing machine", "Deterministic finite automaton", "Nondeterministic finite automaton", "Context-free grammar"], 2),
 
-    enigma("Você se comunica com diferentes plataformas, agindo como um intermediário entre o usuário e o provedor. Quem é você?",
-        ["API", "Banco de dados", "Sistema operacional", "Middleware"], 0),
+    enigma("You communicate with different platforms, acting as an intermediary between the user and the provider. Who are you? ",
+        ["API", "Database", "Operating system", "Middleware"], 0),
 
-    enigma("Você não sabe para onde ir, mas verifica todos os caminhos possíveis, possivelmente voltando ao início da sua jornada. Que técnica é você?",
-        ["Programação dinâmica", "Backtracking", "Guloso", "Busca em largura"], 1),
+    enigma("You don't know where to go, but you check all possible paths, possibly returning to the start of your journey. What technique are you? ",
+        ["Dynamic programming", "Backtracking", "Greedy", "Breadth-first search"], 1),
 
-    enigma("Seu nome é uma estrutura de dados usada para análise, verificação e validação. Qual é o seu nome?",
-        ["Grafo", "Pilha", "Árvore sintática", "Fila de prioridade"], 2),
+    enigma("Your name is a data structure used for analysis, verification, and validation. What is your name? ",
+        ["Graph", "Stack", "Syntax tree", "Priority queue"], 2),
 
-    enigma("Eu sigo uma política de memória cache onde você é o primeiro a chegar e o primeiro a sair. Quem sou eu?",
+    enigma("I follow a cache memory policy where you are the first to arrive and the first to leave. Who am I? ",
         ["LIFO", "FIFO", "MRU", "LFU"], 1),
 
-    enigma("Eu sou o meio, com base no início, ao final de um caminho. Às vezes, me chamam de 'research'. Quem sou eu?",
-        ["Análise", "Metodologia", "Referencial teórico", "Referências"], 1)
+    enigma("I am the middle, based on the beginning, upon an end. Sometimes, people call me 'reasearch'. Who am I? ",
+        ["Analysis", "Methodology", "Theoretical background", "References"], 1)
 ]).
