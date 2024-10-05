@@ -1,78 +1,41 @@
-% main.pl
-:- consult('menu.pl').
-:- consult('enigmas.pl').
-:- consult('maze.pl').
+/* Definindo o módulo main e importando enigmas.*/
+:- module(main, [main/0]).
+:- use_module(enigmas).
 
-% Função principal para iniciar o jogo
-start_game :-
-    nl, write('===== Maze Game ====='), nl,
-    main_menu.
+/* Função principal para jogar o jogo dos enigmas.*/
+main :-
+    writeln('Bem-vindo ao Jogo dos Enigmas!'),
+    enigmas(Enigmas),
+    length(Enigmas, NumEnigmas),
+    play_enigma_loop(0, NumEnigmas),
+    writeln('Parabéns! Você concluiu todos os enigmas!').
 
-% Função do menu principal
-main_menu :-
-    nl, write('1. Start New Game'), nl,
-    write('2. Exit'), nl,
-    write('Choose an option: '),
-    read(Choice),
-    handle_menu_choice(Choice).
-
-% Lida com a escolha do menu
-handle_menu_choice(1) :-
-    nl, write('Starting a New Game...'), nl,
-    initialize_game.
-
-handle_menu_choice(2) :-
-    nl, write('Exiting the game. Goodbye!'), nl.
-
-handle_menu_choice(_) :-
-    nl, write('Invalid option. Please choose again.'), nl,
-    main_menu.
-
-% Inicializa o estado do jogo
-initialize_game :-
-    initial_maze_state(MazeState),
-    play_maze(MazeState).
-
-% Joga o labirinto
-play_maze(MazeState) :-
-    render_maze(MazeState),
-    nl, write('Enter your move (up, down, left, right): '),
-    read(Move),
-    move_player(Move, MazeState, NewMazeState),
-    ( 
-      check_exit(NewMazeState) ->
-      nl, write('Congratulations! You found the exit!'), nl,
-      start_enigma(NewMazeState)
-    ; play_maze(NewMazeState)
-    ).
-
-% Inicia um enigma quando o jogador chega ao final do labirinto
-start_enigma(MazeState) :-
-    nl, write('You have reached an enigma! Solve it to continue.'), nl,
-    enigma(EnigmaIndex, Question1, Question2, Options, CorrectAnswer),
-    nl, write(Question1), nl, write(Question2), nl,
-    write_options(Options, 1),
-    read(PlayerAnswer),
-    (
-        PlayerAnswer =:= CorrectAnswer ->
-        nl, write('Correct! You may proceed.'), nl,
-        next_maze_level(MazeState)
+/* Função recursiva para percorrer todos os enigmas.*/
+play_enigma_loop(CurrentIndex, TotalEnigmas) :-
+    (CurrentIndex < TotalEnigmas ->
+        initial_enigma_state(CurrentIndex, EnigmaState),
+        play_single_enigma(EnigmaState),
+        NextIndex is CurrentIndex + 1,
+        play_enigma_loop(NextIndex, TotalEnigmas)
     ;
-        nl, write('Wrong answer. Try again!'), nl,
-        start_enigma(MazeState)
+        true
     ).
 
-% Escreve as opções do enigma
-write_options([], _).
-write_options([Option | Rest], Index) :-
-    write(Index), write('. '), write(Option), nl,
-    NextIndex is Index + 1,
-    write_options(Rest, NextIndex).
-
-% Passa para o próximo nível do labirinto
-next_maze_level(MazeState) :-
-    next_level(MazeState, NewMazeState),
-    play_maze(NewMazeState).
-
-% Função de entrada do jogo
-:- start_game.
+/* Função para jogar um único enigma até acertar a resposta.*/
+play_single_enigma(EnigmaState) :-
+    render_enigma(EnigmaState),
+    writeln('Escolha uma opção:'),
+    read_line_to_string(user_input, Option),
+    (enigma_event_handler(Option, EnigmaState, UpdatedState) ->
+        % Caso a opção seja válida
+        UpdatedState = enigma_state(_, _, _, CorrectAnswer, SelectedOption),
+        (SelectedOption == CorrectAnswer ->
+            writeln('Resposta correta!'), nl
+        ;
+            writeln('Resposta incorreta. Tente novamente.'), nl,
+            play_single_enigma(UpdatedState)
+        )
+    ;
+        % Se a opção for inválida, exibe a mensagem e repete o enigma
+        play_single_enigma(EnigmaState)
+    ).

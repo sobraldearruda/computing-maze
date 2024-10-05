@@ -1,70 +1,72 @@
-% Definindo o módulo enigmas e os predicados exportados
+/* Definindo o módulo enigmas e os predicados exportados.*/
 :- module(enigmas, [
     initial_enigma_state/2,
     render_enigma/1,
     enigma_event_handler/3,
+    valid_input/2, % Nova função para validar a entrada do usuário
     enigmas/1
 ]).
 
-% Definindo o estado do Enigma
-% Estado é representado como enigma_state/6
-% enigma_state(Índice do Enigma, Pergunta1, Pergunta2, Opções, Resposta Correta, Opção Selecionada)
-:- dynamic enigma_state/6.
+/* Definindo o estado do Enigma.
+   Estado é representado como enigma_state/5.
+   enigma_state(Índice do Enigma, Pergunta, Opções, Resposta Correta, Opção Selecionada).*/
+:- dynamic enigma_state/5.
 
-% Função para criar o estado inicial do enigma
+/* Função para criar o estado inicial do enigma.*/
 initial_enigma_state(Index, EnigmaState) :-
     enigmas(Enigmas),
-    nth0(Index, Enigmas, Enigma),
-    Enigma = enigma(Question1, Question2, Options, CorrectAnswer),
-    EnigmaState = enigma_state(Index, Question1, Question2, Options, CorrectAnswer, -1).
+    nth0(Index, Enigmas, enigma(Question, Options, CorrectAnswer)),
+    EnigmaState = enigma_state(Index, Question, Options, CorrectAnswer, -1). % -1 indica que nenhuma opção foi selecionada
 
-% Função para renderizar o enigma no terminal
+/* Função para renderizar o enigma no terminal.*/
 render_enigma(EnigmaState) :-
-    EnigmaState = enigma_state(_, Question1, Question2, Options, _, SelectedOption),
-    writeln('Pergunta 1:'), writeln(Question1),
-    writeln('Pergunta 2:'), writeln(Question2),
+    EnigmaState = enigma_state(_, Question, Options, _, _),
+    writeln('Pergunta:'),
+    writeln(Question),
     writeln('Opções de resposta:'),
-    display_options(Options, 1),
-    writeln('Selecionado: '), write(SelectedOption),
+    display_options(Options),
     nl.
 
+/* Função auxiliar para exibir as opções com índices.*/
+display_options(Options) :-
+    display_options(Options, 1).
 display_options([], _).
 display_options([Option | Rest], Index) :-
     format("~w. ~w~n", [Index, Option]),
     NextIndex is Index + 1,
     display_options(Rest, NextIndex).
 
-% Função para manipular a seleção de opções do enigma
-enigma_event_handler('1', EnigmaState, UpdatedState) :-
-    EnigmaState = enigma_state(Index, Question1, Question2, Options, CorrectAnswer, _),
-    UpdatedState = enigma_state(Index, Question1, Question2, Options, CorrectAnswer, 0).
+/* Função para manipular a seleção de opções do enigma.*/
+enigma_event_handler(Option, EnigmaState, UpdatedState) :-
+    % Verifica se a opção é válida
+    valid_input(Option, EnigmaState),
+    atom_number(Option, OptionNumber),
+    EnigmaState = enigma_state(Index, Question, Options, CorrectAnswer, _),
+    UpdatedOption is OptionNumber - 1,  % Ajusta para índice de 0 a N
+    UpdatedState = enigma_state(Index, Question, Options, CorrectAnswer, UpdatedOption).
 
-enigma_event_handler('2', EnigmaState, UpdatedState) :-
-    EnigmaState = enigma_state(Index, Question1, Question2, Options, CorrectAnswer, _),
-    UpdatedState = enigma_state(Index, Question1, Question2, Options, CorrectAnswer, 1).
+/* Função para verificar se a opção selecionada é válida.*/
+valid_input(Option, enigma_state(_, _, Options, _, _)) :-
+    atom_number(Option, OptionNumber),  /*Tenta converter o input para número.*/
+    length(Options, Length),  /*Obtém o número de opções disponíveis.*/
+    OptionNumber >= 1,  /*O número deve ser pelo menos 1.*/
+    OptionNumber =< Length,  /*O número deve ser no maximo o número de opções.*/
+    !.
+valid_input(_, _) :-  /*Se falhar, exibe mensagem de erro e falha.*/
+    writeln('Opção inválida! Por favor, insira um número entre 1 e 4.'), fail.
 
-enigma_event_handler('3', EnigmaState, UpdatedState) :-
-    EnigmaState = enigma_state(Index, Question1, Question2, Options, CorrectAnswer, _),
-    UpdatedState = enigma_state(Index, Question1, Question2, Options, CorrectAnswer, 2).
-
-enigma_event_handler('4', EnigmaState, UpdatedState) :-
-    EnigmaState = enigma_state(Index, Question1, Question2, Options, CorrectAnswer, _),
-    UpdatedState = enigma_state(Index, Question1, Question2, Options, CorrectAnswer, 3).
-
-enigma_event_handler(_, EnigmaState, EnigmaState).
-
-% Lista de enigmas disponível no jogo
+/* Lista de enigmas disponíveis no jogo.*/
 enigmas([
-    enigma("Se você volta ao início do labirinto repetidamente,", "então você é um(a):",
+    enigma("Se você volta ao início do labirinto repetidamente, então você é um(a): ",
         ["Pilha", "Fila", "Estrutura de laço", "Recursão"], 2),
 
-    enigma("Sou a seguinte sequência de números: [0, 1, 1, 2, 3, 5, 8, 13, 21, ...].", "Quem sou eu?",
+    enigma("Sou a seguinte sequência de números: [0, 1, 1, 2, 3, 5, 8, 13, 21, ...]. Quem sou eu?",
         ["Sequência de Fibonacci", "Sequência aritmética", "Sequência geométrica", "Série de Taylor"], 0),
 
-    enigma("Você é o último a chegar aqui, mas será o primeiro a sair.", "Quem é você?",
+    enigma("Você é o último a chegar aqui, mas será o primeiro a sair. Quem é você?",
         ["Fila", "Pilha", "Lista encadeada", "Árvore binária"], 1),
 
-    enigma("Tenho um fim, mas sigo caminhos paralelos até chegar lá.", "Quem sou eu?",
+    enigma("Tenho um fim, mas sigo caminhos paralelos até chegar lá. Quem sou eu?",
         ["Máquina de Turing", "Autômato finito determinístico", "Autômato finito não determinístico", "Gramática livre de contexto"], 2),
 
     enigma("Você se comunica com diferentes plataformas, agindo como um intermediário entre o usuário e o provedor. Quem é você?",
@@ -79,6 +81,6 @@ enigmas([
     enigma("Eu sigo uma política de memória cache onde você é o primeiro a chegar e o primeiro a sair. Quem sou eu?",
         ["LIFO", "FIFO", "MRU", "LFU"], 1),
 
-    enigma("Eu sou o meio, com base no início, ao final de um caminho. Às vezes, me chamam de 'reasearch'. Quem sou eu?",
+    enigma("Eu sou o meio, com base no início, ao final de um caminho. Às vezes, me chamam de 'research'. Quem sou eu?",
         ["Análise", "Metodologia", "Referencial teórico", "Referências"], 1)
 ]).
