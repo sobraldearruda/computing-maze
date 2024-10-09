@@ -1,86 +1,57 @@
-/* Define o módulo e os predicados exportados.*/
-:- module(enigmas, [
-    initial_enigma_state/2,
-    render_enigma/1,
-    enigma_event_handler/3,
-    valid_input/2, % Nova função para validar a entrada do usuário
-    enigmas/1
-]).
+/* Define os enigmas associados a cada labirinto.
+   O formato será: enigma(LabIndex, EnigmaTexto, Opções, RespostaCorreta).*/
 
-/* Definindo o estado do enigma.
-   O estado é representado como enigma_state/5.
-   enigma_state(Índice do Enigma, Pergunta, Opções, Resposta Correta, Opção Selecionada).*/
-:- dynamic enigma_state/5.
+enigma(1, "Enigma: If you return to the start of the maze over and over again, then you are a:",
+        ["1. Stack", "2. Queue", "3. Loop structure", "4. Recursion"], 3).
 
-/* Predicado para criar o estado inicial do enigma.*/
-initial_enigma_state(Index, EnigmaState) :-
-    enigmas(Enigmas),
-    nth0(Index, Enigmas, enigma(Question, Options, CorrectAnswer)),
-    EnigmaState = enigma_state(Index, Question, Options, CorrectAnswer, -1). % -1 indica que nenhuma opção foi selecionada
+enigma(2, "Enigma: I am the following sequence of numbers: [0, 1, 1, 2, 3, 5, 8, 13, 21, ...]. Who am I?",
+        ["1. Fibonacci sequence", "2. Arithmetic sequence", "3. Geometric sequence", "4. Taylor series"], 1).
 
-/* Predicado para renderizar o enigma no terminal.*/
-render_enigma(EnigmaState) :-
-    EnigmaState = enigma_state(_, Question, Options, _, _),
-    writeln('Enigma: '),
-    writeln(Question),
-    writeln('Options: '),
-    display_options(Options),
-    nl.
+enigma(3, "Enigma: You are the last to arrive here, but you will be the first to leave. Who are you?",
+        ["1. Queue", "2. Stack", "3. Linked list", "4. Binary tree"], 2).
 
-/* Predicado auxiliar para exibir as opções com índices.*/
-display_options(Options) :-
-    display_options(Options, 1).
-display_options([], _).
-display_options([Option | Rest], Index) :-
-    format("~w. ~w~n", [Index, Option]),
-    NextIndex is Index + 1,
-    display_options(Rest, NextIndex).
+enigma(4, "Enigma: I have an end, but I follow parallel paths until I get there. Who am I?",
+        ["1. Turing machine", "2. Deterministic finite automaton", "3. Nondeterministic finite automaton", "4. Context-free grammar"], 3).
 
-/* Predicado para manipular a seleção de opções do enigma.*/
-enigma_event_handler(Option, EnigmaState, UpdatedState) :-
-    % Verifica se a opção é válida
-    valid_input(Option, EnigmaState),
-    atom_number(Option, OptionNumber),
-    EnigmaState = enigma_state(Index, Question, Options, CorrectAnswer, _),
-    UpdatedOption is OptionNumber - 1,  % Ajusta para índice de 0 a N
-    UpdatedState = enigma_state(Index, Question, Options, CorrectAnswer, UpdatedOption).
+enigma(5, "Enigma: You communicate with different platforms, acting as an intermediary between the user and the provider. Who are you?",
+        ["1. API", "2. Database", "3. Operating system", "4. Middleware"], 1).
 
-/* Predicado para verificar se a opção selecionada é válida.*/
-valid_input(Option, enigma_state(_, _, Options, _, _)) :-
-    atom_number(Option, OptionNumber),  /*Tenta converter o input para número.*/
-    length(Options, Length),  /*Obtém o número de opções disponíveis.*/
-    OptionNumber >= 1,  /*O número deve ser pelo menos 1.*/
-    OptionNumber =< Length,  /*O número deve ser no maximo o número de opções.*/
-    !.
-valid_input(_, _) :-  /*Se falhar, exibe mensagem de erro e falha.*/
-    writeln('Invalid option! Please, write a number between 1 and 4.'), fail.
+enigma(6, "Enigma: You don't know where to go, but you check all possible paths, possibly returning to the start of your journey. What technique are you?",
+        ["1. Dynamic programming", "2. Backtracking", "3. Greedy", "4. Breadth-first search"], 2).
 
-/* Lista de enigmas disponíveis no jogo.*/
-enigmas([
-    enigma("If you return to the start of the maze over and over again, then you are a: ",
-        ["Stack", "Queue", "Loop structure", "Recursion"], 2),
+enigma(7, "Enigma: Your name is a data structure used for analysis, verification, and validation. What is your name?",
+        ["1. Graph", "2. Stack", "3. Syntax tree", "4. Priority queue"], 3).
 
-    enigma("I am the following sequence of numbers: [0, 1, 1, 2, 3, 5, 8, 13, 21, ...]. Who am I? ",
-        ["Fibonacci sequence", "Arithmetic sequence", "Geometric sequence", "Taylor series"], 0),
+enigma(8, "Enigma: I follow a cache memory policy where you are the first to arrive and the first to leave. Who am I?",
+        ["1. LIFO", "2. FIFO", "3. MRU", "4. LFU"], 2).
 
-    enigma("You are the last to arrive here, but you will be the first to leave. Who are you? ",
-        ["Queue", "Stack", "Linked list", "Binary tree"], 1),
+enigma(9, "Enigma: I am the middle, based on the beginning, upon an end. Sometimes, people call me 'reasearch'. Who am I?",
+        ["1. Analysis", "2. Methodology", "3. Theoretical background", "4. References"], 2).
 
-    enigma("I have an end, but I follow parallel paths until I get there. Who am I? ",
-        ["Turing machine", "Deterministic finite automaton", "Nondeterministic finite automaton", "Context-free grammar"], 2),
+/* Predicado para obter o enigma associado ao labirinto.*/
+initial_enigma_state(LabIndex, EnigmaState) :-
+    enigma(LabIndex, Texto, Opcoes, RespostaCorreta),
+    EnigmaState = enigma(Texto, Opcoes, RespostaCorreta).
 
-    enigma("You communicate with different platforms, acting as an intermediary between the user and the provider. Who are you? ",
-        ["API", "Database", "Operating system", "Middleware"], 0),
+/* Predicado para exibir o enigma.*/
+render_enigma(enigma(Texto, Opcoes, _)) :-
+    writeln(Texto), nl,
+    writeln('Options:'), nl,
+    forall(member(Op, Opcoes), (write(Op), nl)).
 
-    enigma("You don't know where to go, but you check all possible paths, possibly returning to the start of your journey. What technique are you? ",
-        ["Dynamic programming", "Backtracking", "Greedy", "Breadth-first search"], 1),
+/* Predicado para verificar se a opção escolhida é válida.*/
+valid_input(OptionNumber, enigma(_, _, _)) :-
+    OptionNumber >= 1,
+    OptionNumber =< 4.
 
-    enigma("Your name is a data structure used for analysis, verification, and validation. What is your name? ",
-        ["Graph", "Stack", "Syntax tree", "Priority queue"], 2),
+/* Predicado para lidar com a resposta do enigma.*/
+enigma_event_handler(OptionNumber, EnigmaState, UpdatedState) :-
+    valid_input(OptionNumber, EnigmaState),
+    UpdatedState = EnigmaState.
 
-    enigma("I follow a cache memory policy where you are the first to arrive and the first to leave. Who am I? ",
-        ["LIFO", "FIFO", "MRU", "LFU"], 1),
+/* Predicado para verificar se a opção escolhida é a correta.*/
+check_answer(OptionNumber, enigma(_, _, RespostaCorreta), 'Right done! You can continue now.') :-
+    OptionNumber = RespostaCorreta.
 
-    enigma("I am the middle, based on the beginning, upon an end. Sometimes, people call me 'reasearch'. Who am I? ",
-        ["Analysis", "Methodology", "Theoretical background", "References"], 1)
-]).
+check_answer(OptionNumber, enigma(_, _, RespostaCorreta), 'Wrong answer. The game is over, but you can try it all again.') :-
+    OptionNumber \= RespostaCorreta.

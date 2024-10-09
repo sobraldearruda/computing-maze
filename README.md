@@ -6,7 +6,11 @@
 
 ## Especificação
 
-- [Clique aqui](https://drive.google.com/file/d/1UtEVLC9ee2bY4JHJCjS_nfQyT0yd_1WY/view?usp=sharing)
+- [Clique aqui](https://drive.google.com/file/d/1gMD3UPAwpid3NbMiGTw8CqeMd4DN7aCo/view?usp=sharing)
+
+## Demo do jogo
+
+- [Clique aqui](https://www.youtube.com/watch?v=kh3Ojxk5OnU)
 
 ## Haskell
 
@@ -14,6 +18,14 @@
 
 ```
 cabal run
+```
+
+## Prolog
+
+- Execute o comando:
+
+```
+swipl -s menu.pl -g main_menu
 ```
 
 > [!NOTE]
