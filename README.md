@@ -20,6 +20,9 @@
 cabal run
 ```
 
+> [!NOTE]
+> Recomendamos que você jogue com o terminal em tela cheia para evitar problemas na interface.
+
 ## Prolog
 
 - Execute o comando:
